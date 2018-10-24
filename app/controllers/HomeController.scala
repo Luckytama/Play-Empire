@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject._
 import play.api.mvc._
+import de.htwg.se.empire.Empire
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
