@@ -1,15 +1,8 @@
-@*
- * Call the `main` template with two arguments. The first
- * argument is a `String` with the title of the page, the second
- * argument is an `Html` object containing the body of the page.
- *@
-@main("Welcome to Play") {
-
-    @*
-     * Get an `Html` object by calling the built-in Play welcome
-     * template and passing a `String` message.
-     *@
+<head>
+    <title>About | Empire</title>
     <h1>About Empire</h1>
+</head>
+<body>
     <p>
         Risk is a strategy board game of diplomacy, conflict and conquest[1] for two to six
         players. The standard version is played on a board depicting a political map of the
@@ -35,5 +28,10 @@
     <p>
         The following image shows a standard map of the playingfield. <br>
         <img src=@routes.Assets.versioned("images/Risk_game_map_fixed.png")>
-    </p>
-}
+        </p>
+
+    <button id="btn_startGame">
+            Start a new Game!
+    </button>
+    <script src="@routes.Assets.versioned("javascripts/empire.js")" type="text/javascript"></script>
+</body>

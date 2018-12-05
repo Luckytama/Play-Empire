@@ -11,7 +11,6 @@ import org.apache.logging.log4j.{ LogManager, Logger }
 
 case class DefaultGameController @Inject() (var playingField: Grid) extends GameController {
 
-  //TODO: Change println to View.display message
   val injector: Injector = Guice.createInjector(new EmpireModule)
   val attackController: AttackController = injector.getInstance(classOf[AttackController])
   val initController: InitController = injector.getInstance(classOf[InitController])
