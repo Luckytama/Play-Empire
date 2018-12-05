@@ -1,10 +1,4 @@
 @*
- * This template takes a single argument, a String containing a
- * message to display.
- *@
-@(message: String)
-
-@*
  * Call the `main` template with two arguments. The first
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
@@ -15,6 +9,31 @@
      * Get an `Html` object by calling the built-in Play welcome
      * template and passing a `String` message.
      *@
-    Hello World
+    <h1>About Empire</h1>
+    <p>
+        Risk is a strategy board game of diplomacy, conflict and conquest[1] for two to six
+        players. The standard version is played on a board depicting a political map of the
+        earth, divided into forty-two territories, which are grouped into six continents.
+        Turn rotates among players who control armies of playing pieces with which they attempt
+        to capture territories from other players, with results determined by dice rolls.
+        Players may form and dissolve alliances during the course of the game. The goal of the
+        game is to occupy every territory on the board and in doing so, eliminate the other
+        players.[2] The game can be lengthy, requiring several hours to multiple days to finish.
+        European versions are structured so that each player has a limited "secret mission"
+        objective that shortens the game.
+    </p>
 
+    <p>
+        Risk was invented in 1957 by Albert Lamorisse, a French filmmaker, and went on to become
+        one of the most popular board games in history, inspiring other popular games like Axis
+        & Allies and Settlers of Catan. The simple rules but complex interactions make it
+        appealing to adults as well as children and families. It is still in production by Hasbro
+        with numerous editions and variants with popular media themes and different rules
+        including PC software versions, video games and mobile apps.
+    </p>
+
+    <p>
+        The following image shows a standard map of the playingfield. <br>
+        <img src=@routes.Assets.versioned("images/Risk_game_map_fixed.png")>
+    </p>
 }

@@ -27,8 +27,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
     Ok("status: " + tui)
   }
 
-  def empire = Action {
-    Ok(views.html.index("Hello world"))
+  def about = Action {
+    Ok(views.html.index())
   }
 
 }
