@@ -1,7 +1,27 @@
-@main("Hello") {
+@(controller: de.htwg.se.empire.controller.GameController)
+@phases = @{de.htwg.se.empire.util.Phase}
+
+@main("HTWG Empire") {
     <section id="top">
         <div class="wrapper">
-            <h1>Hello World</h1>
+            <h1>HTWG Empire</h1>
         </div>
     </section>
+    <p>Game Status: @controller.status</p>
+    <div>
+        @if(controller.playerOnTurn != null) {
+            <p>
+                Player: @controller.playerOnTurn.name,
+                Number of countries: @controller.playerOnTurn.getCountryAmount,
+                Number of soldiers: @controller.playerOnTurn.getNumberOfAllSoldiers
+            </p>
+            @if(controller.status == phases.REINFORCEMENT) {
+                <p>Distribute soldiers to: @controller.playerOnTurn.countries</p>
+                <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
+
+            }
+        }
+    </div>
+
+
 }

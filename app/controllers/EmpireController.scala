@@ -13,14 +13,24 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 @Singleton
 class EmpireController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
-  def newGame = Action {
-    val injector: Injector = Guice.createInjector(new EmpireModule)
-    val parser: Parser = injector.getInstance(classOf[Parser])
-    val playingField: Grid = injector.getInstance(classOf[Grid])
-    val gameController: GameController = injector.getInstance(classOf[GameController])
-    val tui: TUI = TUI(gameController)
-    val gui = new SwingGui(gameController)
+  var injector: Injector = Guice.createInjector(new EmpireModule)
+  var parser: Parser = injector.getInstance(classOf[Parser])
+  var playingField: Grid = injector.getInstance(classOf[Grid])
+  var gameController: GameController = injector.getInstance(classOf[GameController])
+  var tui: TUI = TUI(gameController)
+  var gui = new SwingGui(gameController)
 
-    Ok(views.html.empire())
+
+  def newGame = Action {
+    playingField = injector.getInstance(classOf[Grid])
+    gameController = injector.getInstance(classOf[GameController])
+    tui = TUI(gameController)
+    gui = new SwingGui(gameController)
+    Redirect("/empire")
+  }
+
+  def empire = Action {
+    Ok(views.html.empire(gameController))
+
   }
 }

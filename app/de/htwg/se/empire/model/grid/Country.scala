@@ -24,5 +24,5 @@ case class Country(name: String, adjacentCountries: List[String]) {
     if (0 <= soldiers - numberOfSoldiers) soldiers -= numberOfSoldiers else soldiers = 0
   }
 
-  override def toString: String = name
+  override def toString: String = "{name: " + name + ", soldiers: " + soldiers + "} "
 }
