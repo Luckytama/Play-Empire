@@ -1,5 +1,7 @@
 @(controller: de.htwg.se.empire.controller.GameController)
-@phases = @{de.htwg.se.empire.util.Phase}
+@phases = @{
+    de.htwg.se.empire.util.Phase
+}
 
 @main("HTWG Empire") {
     <section id="top">
@@ -9,6 +11,30 @@
     </section>
     <p>Game Status: @controller.status</p>
     <div>
+        @if(controller.status == phases.IDLE) {
+            <div class="phase_idle">
+                <div class="headline">
+                    <div>Setup Phase</div>
+                </div>
+                <div class="choose_playingfield">
+                    Select your Playingfield<br>
+                    <select>
+                        <option value="EmpireData.json">Classic Risk Board</option>
+                    </select>
+                </div>
+                <div class="form_addPlayer">
+                    <form>
+                        Play with:<br>
+                        <input type="text" name="playername"><br>
+                    </form>
+                </div>
+                <div class="startGame">
+                    <button class="btn_startGame">
+                        Start Game
+                    </button>
+                </div>
+            </div>
+        }
         @if(controller.playerOnTurn != null) {
             <p>
                 Player: @controller.playerOnTurn.name,
