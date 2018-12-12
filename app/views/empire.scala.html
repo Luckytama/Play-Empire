@@ -5,7 +5,6 @@
 
 @main("HTWG Empire") {
     <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/main.css")' />
-
     <section id="top">
         <div class="wrapper">
             <h1>HTWG Empire</h1>
@@ -39,14 +38,53 @@
         }
         @if(controller.playerOnTurn != null) {
             <p>
-                Player: @controller.playerOnTurn.name,
-                Number of countries: @controller.playerOnTurn.getCountryAmount,
-                Number of soldiers: @controller.playerOnTurn.getNumberOfAllSoldiers
+                <table>
+                    <caption>Game Info</caption>
+                    <tr>
+                        <th>Current Player</th>
+                        <th>Number of countries</th>
+                        <th>Number of soldiers</th>
+                    </tr>
+                    <tr>
+                        <td>@controller.playerOnTurn.name</td>
+                        <td>@controller.playerOnTurn.getCountryAmount</td>
+                        <td>@controller.playerOnTurn.getNumberOfAllSoldiers</td>
+                    </tr>
+                </table>
             </p>
             @if(controller.status == phases.REINFORCEMENT) {
-                <p>Distribute soldiers to: @controller.playerOnTurn.countries</p>
-                <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
 
+                <table>
+                    <caption>
+                        Distribute soldiers to:
+                    </caption>
+                    <tr>
+                        <th>Country</th>
+                        <th># of soldiers</th>
+                    </tr>
+                    @for(country <- controller.playerOnTurn.countries) {
+                        <tr>
+                            <td>@country.name</td>
+                            <td>@country.soldiers</td>
+                        </tr>
+                    }
+                </table>
+                <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
+            }
+            @if(controller.status == phases.ATTACK) {
+                <table>
+                    <caption>Choose country to attack from:</caption>
+                    <tr>
+                        <th>Country</th>
+                        <th># of soldiers</th>
+                        @for(country <- controller.playerOnTurn.countries) {
+                            <tr>
+                                <td>@country.name</td>
+                                <td>@country.soldiers</td>
+                            </tr>
+                        }
+                    </tr>
+                </table>
             }
         }
     </div>

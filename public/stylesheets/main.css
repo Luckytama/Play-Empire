@@ -1,6 +1,20 @@
 h1 {
     font-size: 40px;
-    font-family: "Verdana", Geneva, sans-serif;
-    font-weight: bold;
+    font-family: MedievalSharp, cursive;
     color: black;
+    text-shadow: 4px 4px 4px #aaa;
+}
+table, th, td, caption {
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-spacing: 5px;
+    padding: 15px;
+    text-align: left;
+    font-family: MedievalSharp, cursive;
+}
+@font-face
+{
+    font-family: MedievalSharp;
+    src: url('../fonts/MedievalSharp/MedievalSharp.ttf');
+    format('truetype');
 }
