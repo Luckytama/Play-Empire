@@ -3,7 +3,7 @@
     de.htwg.se.empire.util.Phase
 }
 
-@main("HTWG Empire") {
+@main("HTWG Empire", "javascripts/game_page.js") {
     <section id="top">
         <div class="wrapper">
             <h1>HTWG Empire</h1>
@@ -17,29 +17,31 @@
                     <div>Setup Phase</div>
                 </div>
                 <div class="choose_playingfield">
-                    Select your Playingfield<br>
+                Select your Playingfield<br>
                     <select>
                         <option value="EmpireData.json">Classic Risk Board</option>
                     </select>
                 </div>
                 <div class="form_addPlayer">
-                    <form>
-                        Play with:<br>
-                        <input type="text" name="playername"><br>
+                    Play with:
+                    <div id="players"></div>
+                    <form id="form_setup">
+                        <input id="input_playername" type="text" name="playername">
+                        <button id="btn_addPlayer" type="button">Add Player</button>
                     </form>
                 </div>
                 <div class="startGame">
-                    <button class="btn_startGame">
-                        Start Game
+                    <button id="btn_startGame">
+                    Start Game
                     </button>
                 </div>
             </div>
         }
         @if(controller.playerOnTurn != null) {
             <p>
-                Player: @controller.playerOnTurn.name,
-                Number of countries: @controller.playerOnTurn.getCountryAmount,
-                Number of soldiers: @controller.playerOnTurn.getNumberOfAllSoldiers
+            Player: @controller.playerOnTurn.name,
+            Number of countries: @controller.playerOnTurn.getCountryAmount,
+            Number of soldiers: @controller.playerOnTurn.getNumberOfAllSoldiers
             </p>
             @if(controller.status == phases.REINFORCEMENT) {
                 <p>Distribute soldiers to: @controller.playerOnTurn.countries</p>
@@ -48,6 +50,4 @@
             }
         }
     </div>
-
-
 }
