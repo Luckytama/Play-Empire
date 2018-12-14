@@ -7,14 +7,13 @@ $(document).ready(function() {
         if (playername === "") {
             alert("form ist empty");
             // add css to form_setup for empty input (class = "form_setup empty")
-            document.forms["form_setup"].classList.add("empty");
         } else {
             if (players === "") {
                 players = playername;
             } else {
                 players += ", " + playername;
             }
-            document.getElementById("players").innerText = players;
+            $("#players").text(players);
         }
     });
 
