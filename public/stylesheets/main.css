@@ -3,18 +3,67 @@ h1 {
     font-family: MedievalSharp, cursive;
     color: black;
     text-shadow: 4px 4px 4px #aaa;
+    margin: auto;
 }
+
 table, th, td, caption {
     border: 1px solid black;
     border-collapse: collapse;
     border-spacing: 5px;
-    padding: 15px;
+    padding: 5px;
     text-align: left;
     font-family: MedievalSharp, cursive;
+    margin: auto
 }
+
+select {
+    font-family: MedievalSharp, cursive;
+}
+
 @font-face
 {
     font-family: MedievalSharp;
     src: url('../fonts/MedievalSharp/MedievalSharp.ttf');
     format('truetype');
+}
+
+#top{background:#80c846 url(../images/header-pattern.png) fixed;box-shadow:0 -4px 0 rgba(0, 0, 0, 0.1) inset;padding:0;position:relative;}#top .wrapper{padding:15px 0;}
+
+
+.status {
+    padding: 5px;
+    border: 1px solid black;
+    margin:auto;
+    font-family: MedievalSharp, cursive;
+}
+
+.playingfield {
+    padding: 5px;
+    border: 1px solid black;
+    margin:auto;
+    font-family: MedievalSharp, cursive;
+}
+
+.phase_idle {
+
+}
+
+.btn_start_game {
+
+}
+
+.choose_playingfield {
+
+}
+
+.country_info {
+
+}
+
+.game_info {
+
+}
+
+.move_plan {
+
 }

@@ -9,84 +9,100 @@
             <h1>HTWG Empire</h1>
         </div>
     </section>
-    <p>Game Status: @controller.status</p>
-    <div>
-        @if(controller.status == phases.IDLE) {
-            <div class="phase_idle">
-                <div class="headline">
-                    <div>Setup Phase</div>
+    <div class="status container">
+        <div class="row col-md-12">
+            <p>Game Status: @controller.status</p>
+        </div>
+        <div class="playingfield row">
+            @if(controller.status == phases.IDLE) {
+                <div class="phase_idle col-md-12">
+                    <div class="headline">
+                        <div>Setup Phase</div>
+                    </div>
+                    <div class="choose_playingfield">
+                        Select your Playingfield<br>
+                        <select>
+                            <option value="EmpireData.json">Classic Risk Board</option>
+                        </select>
+                    </div>
+                    <div class="form_add_player">
+                        <form>
+                            Play with:<br>
+                            <input type="text" name="playername"><br>
+                        </form>
+                    </div>
+                    <div class="start_game">
+                        <button class="btn_start_game">
+                            Start Game
+                        </button>
+                    </div>
                 </div>
-                <div class="choose_playingfield">
-                Select your Playingfield<br>
-                    <select>
-                        <option value="EmpireData.json">Classic Risk Board</option>
-                    </select>
-                </div>
-                <div class="form_addPlayer">
-                    Play with:
-                    <div id="players"></div>
-                    <form id="form_setup">
-                        <input id="input_playername" type="text" name="playername">
-                        <button id="btn_addPlayer" type="button">Add Player</button>
-                    </form>
-                </div>
-                <div class="startGame">
-                    <button id="btn_startGame">
-                    Start Game
-                    </button>
-                </div>
-            </div>
-        }
-        @if(controller.playerOnTurn != null) {
-            <p>
-                <table>
-                    <caption>Game Info</caption>
-                    <tr>
-                        <th>Current Player</th>
-                        <th>Number of countries</th>
-                        <th>Number of soldiers</th>
-                    </tr>
-                    <tr>
-                        <td>@controller.playerOnTurn.name</td>
-                        <td>@controller.playerOnTurn.getCountryAmount</td>
-                        <td>@controller.playerOnTurn.getNumberOfAllSoldiers</td>
-                    </tr>
-                </table>
-            </p>
-            @if(controller.status == phases.REINFORCEMENT) {
-
-                <table>
-                    <caption>
-                        Distribute soldiers to:
-                    </caption>
-                    <tr>
-                        <th>Country</th>
-                        <th># of soldiers</th>
-                    </tr>
-                    @for(country <- controller.playerOnTurn.countries) {
-                        <tr>
-                            <td>@country.name</td>
-                            <td>@country.soldiers</td>
-                        </tr>
-                    }
-                </table>
-                <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
             }
-            @if(controller.status == phases.ATTACK) {
-                <table>
-                    <caption>Choose country to attack from:</caption>
-                    <tr>
-                        <th>Country</th>
-                        <th># of soldiers</th>
+            @if(controller.playerOnTurn != null) {
+                <div class="game_info col-md-4">
+                    <table>
+                        <caption>Game Info</caption>
+                        <tr>
+                            <th>Current Player</th>
+                            <th>Number of countries</th>
+                            <th>Number of soldiers</th>
+                        </tr>
+                        <tr>
+                            <td>@controller.playerOnTurn.name</td>
+                            <td>@controller.playerOnTurn.getCountryAmount</td>
+                            <td>@controller.playerOnTurn.getNumberOfAllSoldiers</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="country_info col-md-4">
+                    <table>
+                        <caption>
+                            Your countries
+                        </caption>
+                        <tr>
+                            <th>Country</th>
+                            <th># of soldiers</th>
+                        </tr>
                         @for(country <- controller.playerOnTurn.countries) {
                             <tr>
                                 <td>@country.name</td>
                                 <td>@country.soldiers</td>
                             </tr>
                         }
-                    </tr>
-                </table>
+                    </table>
+                </div>
+                @if(controller.status == phases.REINFORCEMENT) {
+                    <div class="move_plan col-md-4">
+                        <p>Distribute soldiers to: </p>
+                        <select>
+                            <name>Country</name>
+                            @for(country <- controller.playerOnTurn.countries) {
+                                <option value=country>@country</option>
+                            }
+                        </select>
+                        <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
+                    </div>
+
+                }
+                @if(controller.status == phases.ATTACK) {
+                    <div class="move_plan col-md-4">
+                        <p>Choose country to attack from: </p>
+                        <select>
+                            <name>Country</name>
+                            @for(country <- controller.playerOnTurn.countries) {
+                                <option value=country>@country</option>
+                            }
+                        </select>
+                        <p>Choose country to attack: </p>
+                        <select>
+                            <name>Country</name>
+                            @for(country <- controller.playerOnTurn.countries) {
+                                <option value=country>@country</option>
+                            }
+                        </select>
+                    </div>
+                }
             }
-        }
+        </div>
     </div>
 }
