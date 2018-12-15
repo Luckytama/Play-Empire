@@ -1,20 +1,91 @@
-h1 {
-    font-size: 40px;
-    font-family: MedievalSharp, cursive;
-    color: black;
-    text-shadow: 4px 4px 4px #aaa;
-}
 table, th, td, caption {
-    border: 1px solid black;
     border-collapse: collapse;
     border-spacing: 5px;
-    padding: 15px;
+    padding: 5px;
     text-align: left;
-    font-family: MedievalSharp, cursive;
+    margin: auto;
 }
-@font-face
-{
-    font-family: MedievalSharp;
-    src: url('../fonts/MedievalSharp/MedievalSharp.ttf');
+
+*{font-family:Cincel-Regular, serif;}
+
+body {
+    background-image: url(../images/what-the-hex.png);
+}
+
+@font-face {
+    font-family: Cincel-Regular;
+    src: url('../fonts/Cinzel/Cinzel-Regular.ttf');
     format('truetype');
+}
+
+@font-face {
+    font-family: Cincel-Bold;
+    src: url('../fonts/Cinzel/Cinzel-Bold.ttf');
+format('truetype');
+}
+
+@font-face {
+    font-family: Cincel-Black;
+    src: url('../fonts/Cinzel/Cinzel-Black.ttf');
+format('truetype');
+}
+
+#field-select {
+    width: auto;
+}
+
+.start_game {
+    padding-top: 10px;
+}
+
+#top {
+    background: rgba(14, 4, 5, 0.61) url(../images/connectwork.png) fixed;
+    box-shadow:0 -4px 0 rgba(0, 0, 0, 0.1) inset;
+    padding: auto;
+    position:relative;
+}
+
+#top .wrapper{
+    padding:15px;
+}
+
+#top .wrapper h1 {
+    font-size: 40px;
+    color: #dbdbdb;
+    text-shadow: 4px 4px 4px #000000;
+    margin: auto;
+}
+
+.status {
+    padding: 5px;
+    margin:auto;
+}
+
+.playingfield {
+    padding: 5px;
+    margin:auto;
+}
+
+.phase_idle {
+
+}
+
+.btn_start_game {
+
+}
+
+.choose_playingfield {
+
+}
+
+.country_info {
+
+}
+
+.game_info {
+
+}
+
+.move_plan {
+
 }
