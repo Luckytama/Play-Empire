@@ -35,8 +35,13 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
   }
 
   def startGame = Action { request =>
-    val json = request.body.asJson.get
+    val headers = request.body.asFormUrlEncoded.get
+    val playernames = headers.get("players[]")
+    val playingfieldFile = headers("playingfield").head
 
-    Ok(json)
+    gameController.setUpPhase("playingfield/" + playingfieldFile)
+    playernames.foreach(gameController.addPlayer)
+
+    Ok(gameController.toString)
   }
 }
