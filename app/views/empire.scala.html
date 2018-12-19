@@ -25,14 +25,16 @@
                             <option value="EmpireData.json">Classic Risk Board</option>
                         </select>
                     </div>
-                    <div class="form_add_player">
+                    <div class="form_add_player" id="add_player_form">
                         <form>
                             Play with:<br>
-                            <input type="text" name="playername"><br>
+                            <input type="text" id="player_name" name="playername"><br>
                         </form>
                     </div>
+                    <button type="button" id="delete_player" class="btn btn-dark">-</button>
+                    <button type="button" id="add_player" class="btn btn-dark">+</button>
                     <div class="start_game">
-                        <button type="button" class="btn btn-dark">Start Game</button>
+                        <button type="button" id="start_game" class="btn btn-dark">Start Game</button>
                     </div>
                 </div>
             }
@@ -77,7 +79,7 @@
                         </div>
                         <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
                         <div class="dirtibute_soldiers">
-                            <button type="button" class="btn btn-dark">Distribute Soldiers</button>
+                            <button type="button" id="distribute_soldiers" class="btn btn-dark">Distribute Soldiers</button>
                         </div>
                     </div>
 
@@ -97,7 +99,7 @@
                             }
                         </select>
                         <div class="attack">
-                            <button type="button" class="btn btn-dark">Attack</button>
+                            <button type="button" id="attack" class="btn btn-dark">Attack</button>
                         </div>
                     </div>
                 }

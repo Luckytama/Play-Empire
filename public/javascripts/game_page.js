@@ -1,6 +1,17 @@
 $(document).ready(function() {
 
     var players = "";
+    var player_form_index=0;
+
+    $("#add_player").click(function() {
+        player_form_index++;
+        $("#player_name").clone().appendTo("#add_player_form").attr("id","player_name" + player_form_index);
+    });
+
+    $("#delete_player").click(function() {
+        $("#player_name" + player_form_index).remove();
+        player_form_index--;
+    });
 
     $("#btn_addPlayer").click(function() {
         var playername = $("#input_playername").val();
