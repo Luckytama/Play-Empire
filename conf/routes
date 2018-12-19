@@ -15,4 +15,6 @@ GET     /                           controllers.HomeController.about
 
 GET     /empire                     controllers.EmpireController.empire
 GET     /empire/newgame             controllers.EmpireController.newGame
+
+POST    /empire/startgame           controllers.EmpireController.startGame
       

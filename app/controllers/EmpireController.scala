@@ -9,6 +9,7 @@ import de.htwg.se.empire.view.TUI
 import de.htwg.se.empire.view.gui.SwingGui
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.libs.json.Json
 
 @Singleton
 class EmpireController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
@@ -31,6 +32,11 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
 
   def empire = Action {
     Ok(views.html.empire(gameController))
+  }
 
+  def startGame = Action { request =>
+    val json = request.body.asJson.get
+
+    Ok(json)
   }
 }
