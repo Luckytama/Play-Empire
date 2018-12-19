@@ -18,7 +18,7 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
   val reinforcementController: ReinforcementController = injector.getInstance(classOf[ReinforcementController])
   val parser: Parser = injector.getInstance(classOf[Parser])
 
-  var status: Phase = IDLE
+  var status: Phase = SETUP
   var playerOnTurn: Player = _
 
   val LOG: Logger = LogManager.getLogger(this.getClass)

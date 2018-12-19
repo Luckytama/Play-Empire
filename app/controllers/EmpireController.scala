@@ -5,6 +5,7 @@ import de.htwg.se.empire.EmpireModule
 import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.parser.Parser
+import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
 import de.htwg.se.empire.view.gui.SwingGui
 import javax.inject.{Inject, Singleton}
@@ -41,7 +42,11 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
 
     gameController.setUpPhase("playingfield/" + playingfieldFile)
     playernames.foreach(gameController.addPlayer)
-
-    Ok(gameController.toString)
+    gameController.changeToGamePhase()
+    if (gameController.status == Phase.REINFORCEMENT) {
+      Ok(views.html.empire(gameController))
+    }  else {
+      Ok(gameController.toString)
+    }
   }
 }

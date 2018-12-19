@@ -42,31 +42,20 @@ $(document).ready(function() {
             $.ajax({
                 url: '/empire/startgame',
                 type: 'POST',
-                dataType: 'JSON',
                 data: starter,
                 beforeSend: function(request) {
                     return request.setRequestHeader('X-CSRF-Token', $("meta[name='token']").attr('content'));
                 },
-                success: function(response){
-                    console.log("success");
+                success: function(){
+                    location.reload(true);
                 },
-                error: function(response){
+                error: function(){
                 }
             });
         } else {
+            //TODO: Setup a notification bar for those error messeges
             alert("Not enough players!")
         }
-
-        // if (players === "") {
-        //     // add css class to form_setup for empty input or for Playingfield selection
-        // } else {
-        //     const http = new XMLHttpRequest();
-        //     const url = "http://localhost:9000/empire/yay";
-        //     http.setRequestHeader("players", players);
-        //     //http.setRequestHeader("playingfield", )
-        //     http.open("GET", url);
-        //     http.send();
-        // }
     });
 
 });
