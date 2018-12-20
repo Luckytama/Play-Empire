@@ -1,5 +1,6 @@
 package de.htwg.se.empire.controller
 
+import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.util.Phase.Phase
 
@@ -26,4 +27,6 @@ trait GameController extends Publisher {
   def completeRound(): Unit
 
   def getCurrentPhase: Phase
+
+  def getGrid: Grid
 }

@@ -1,22 +1,24 @@
 package de.htwg.se.empire.controller.impl
 
-import com.google.inject.{ Guice, Inject, Injector }
+import com.google.inject.{Guice, Inject, Injector}
 import de.htwg.se.empire.EmpireModule
-import de.htwg.se.empire.controller.{ AttackController, GameController, InitController, ReinforcementController }
+import de.htwg.se.empire.controller.{AttackController, GameController, InitController, ReinforcementController}
 import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.model.grid.Country
 import de.htwg.se.empire.model.player.Player
-import de.htwg.se.empire.util.Phase.{ Phase, _ }
-import org.apache.logging.log4j.{ LogManager, Logger }
+import de.htwg.se.empire.parser.Parser
+import de.htwg.se.empire.util.Phase.{Phase, _}
+import org.apache.logging.log4j.{LogManager, Logger}
 
-case class DefaultGameController @Inject() (var playingField: Grid) extends GameController {
+case class DefaultGameController @Inject()(var playingField: Grid) extends GameController {
 
   val injector: Injector = Guice.createInjector(new EmpireModule)
   val attackController: AttackController = injector.getInstance(classOf[AttackController])
   val initController: InitController = injector.getInstance(classOf[InitController])
   val reinforcementController: ReinforcementController = injector.getInstance(classOf[ReinforcementController])
+  val parser: Parser = injector.getInstance(classOf[Parser])
 
-  var status: Phase = IDLE
+  var status: Phase = SETUP
   var playerOnTurn: Player = _
 
   val LOG: Logger = LogManager.getLogger(this.getClass)
@@ -108,6 +110,8 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
 
   override def getCurrentPhase: Phase = status
 
+  override def getGrid: Grid = playingField
+
   private def getNextPlayer: Player = {
     val idx = playingField.players.indexOf(playerOnTurn)
     if (idx + 1 == playingField.players.length) playingField.players.head else playingField.players(idx + 1)
@@ -132,7 +136,7 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
     if ((src.isDefined && target.isDefined)
       && src.get.adjacentCountries.contains(target.get.name)
       && (src.get.soldiers > soldiers) && (playerOnTurn.countries.contains(src.get)
-        && !playerOnTurn.countries.contains(target.get))) {
+      && !playerOnTurn.countries.contains(target.get))) {
       true
     } else {
       false

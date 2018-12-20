@@ -14,7 +14,7 @@
             <p>Game Status: @controller.status</p>
         </div>
         <div class="playingfield row">
-            @if(controller.status == phases.IDLE) {
+            @if(controller.status == phases.SETUP) {
                 <div class="phase_idle col-md-12">
                     <div class="headline">
                         <div>Setup Phase</div>
@@ -71,15 +71,16 @@
                     <div class="move_plan col-md-4">
                         <div class="form-group">
                             <label for="country">Distribute soldiers to:</label>
-                            <select class="form-control" id="distribute-soldiers">
+                            <select class="form-control" id="distribute_soldiers_cb">
                                 @for(country <- controller.playerOnTurn.countries) {
-                                    <option value=country>@country</option>
+                                    <option>@country</option>
                                 }
                             </select>
                         </div>
                         <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
                         <div class="dirtibute_soldiers">
-                            <button type="button" id="distribute_soldiers" class="btn btn-dark">Distribute Soldiers</button>
+                            <input type="text" id="distribute_soldiers_input">
+                            <button type="button" id="distribute_soldiers_btn" class="btn btn-dark">Distribute Soldiers</button>
                         </div>
                     </div>
 
@@ -89,17 +90,19 @@
                         <label for="country">Choose country to attack from:</label>
                         <select class="form-control" id="attack-from">
                             @for(country <- controller.playerOnTurn.countries) {
-                                <option value=country>@country</option>
+                                <option>@country</option>
                             }
                         </select>
                         <label for="country">Choose country to attack:</label>
                         <select class="form-control" id="attack-to">
-                            @for(country <- controller.playerOnTurn.countries) {
-                                <option value=country>@country</option>
-                            }
                         </select>
+                        <label for="soldiers_to_attack">Amount of Soldiers to attack:</label>
+                        <input type="text" id="soldiers_to_attack">
                         <div class="attack">
-                            <button type="button" id="attack" class="btn btn-dark">Attack</button>
+                            <button type="button" id="attack_btn" class="btn btn-dark">Attack</button>
+                        </div>
+                        <div id="complete_round">
+                            <button type="button" id="complete_round_btn" class="btn btn-dark">Complete Round</button>
                         </div>
                     </div>
                 }

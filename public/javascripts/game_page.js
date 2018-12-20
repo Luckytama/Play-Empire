@@ -1,19 +1,23 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
-    var players = "";
-    var player_form_index=0;
+    //On reload functions
+    window.onload = loadAdjacentCountries();
 
-    $("#add_player").click(function() {
+    let players = [];
+    let player_form_index = 0;
+    let playingField = "";
+
+    $("#add_player").click(function () {
         player_form_index++;
-        $("#player_name").clone().appendTo("#add_player_form").attr("id","player_name" + player_form_index);
+        $("#player_name").clone().appendTo("#add_player_form").attr("id", "player_name" + player_form_index).val(null);
     });
 
-    $("#delete_player").click(function() {
+    $("#delete_player").click(function () {
         $("#player_name" + player_form_index).remove();
         player_form_index--;
     });
 
-    $("#btn_addPlayer").click(function() {
+    $("#btn_addPlayer").click(function () {
         var playername = $("#input_playername").val();
         if (playername === "") {
             alert("form ist empty");
@@ -28,17 +32,113 @@ $(document).ready(function() {
         }
     });
 
-    $("#btn_startGame").click(function() {
-        if (players === "") {
-            // add css class to form_setup for empty input or for Playingfield selection
+    $("#start_game").click(function (event) {
+        $("#add_player_form input[type=text]").each(function () {
+            if (this.value !== "") {
+                players.push(this.value);
+            }
+        });
+        playingField = $("#field-select").val();
+        if (players.length >= 2) {
+            let starter = {
+                "players": players,
+                "playingfield": playingField
+            };
+            $.ajax({
+                url: '/empire/startgame',
+                type: 'POST',
+                data: starter,
+                success: function () {
+                    location.reload(true);
+                },
+                error: function () {
+                    //TODO: make error handling in empireController and return message
+                }
+            });
         } else {
-            const http = new XMLHttpRequest();
-            const url = "http://localhost:9000/empire/yay";
-            http.setRequestHeader("players", players);
-            //http.setRequestHeader("playingfield", )
-            http.open("GET", url);
-            http.send();
+            //TODO: Setup a notification bar for those error messeges
+            alert("Not enough players!")
         }
     });
 
+    $("#distribute_soldiers_btn").click(function () {
+        let amountOfSoldiers = $("#distribute_soldiers_input").val();
+        let country = $("#distribute_soldiers_cb").val();
+        if (!isNaN(amountOfSoldiers)) {
+            let distributeData = {"amountOfSoldiers": amountOfSoldiers, "country": country};
+            $.ajax({
+                url: 'empire/distribute',
+                type: 'POST',
+                data: distributeData,
+                success: function () {
+                    location.reload(true);
+                },
+                error: function () {
+                    alert("Something went wrong!");
+                }
+            })
+        } else {
+            alert("Input must be a number");
+        }
+    });
+
+    $("#attack_btn").click(function () {
+        let attackCountry = $("#attack-from").val();
+        let defendCountry = $("#attack-to").val();
+        let amountOfSoldiers = $("#soldiers_to_attack").val();
+        if (!isNaN(amountOfSoldiers)) {
+            let attackData = {
+                "attackCountry": attackCountry,
+                "defendCountry": defendCountry,
+                "soldiers": amountOfSoldiers
+            };
+            $.ajax({
+                url: 'empire/attack',
+                type: 'POST',
+                data: attackData,
+                success: function () {
+                    alert("Successfully attack");
+                    location.reload(true);
+                },
+                error: function () {
+                    aler("ohje");
+                }
+            });
+        }
+    });
+
+    $("#complete_round_btn").click(function () {
+        $.ajax({
+            url: 'empire/complete',
+            type: 'POST',
+            success: function () {
+                location.reload(true);
+            }
+        });
+    });
+
+    $("#attack-from").change(loadAdjacentCountries);
+
+    function loadAdjacentCountries() {
+        let country = $("#attack-from").val();
+        let attackToData = {"country": country};
+        if (!country || !attackToData) {
+            return;
+        }
+        $.ajax({
+            url: 'empire/getAttackTo',
+            type: 'POST',
+            data: attackToData,
+            success: function (attackToCountries) {
+                $("#attack-to").empty();
+                attackToCountries.adjacentCountries.forEach(function (c) {
+                    console.log(c);
+                    $("#attack-to").append(new Option(c));
+                });
+            },
+            error: function (message) {
+                alert(message);
+            }
+        })
+    }
 });
