@@ -43,13 +43,11 @@ $(document).ready(function() {
                 url: '/empire/startgame',
                 type: 'POST',
                 data: starter,
-                beforeSend: function(request) {
-                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='token']").attr('content'));
-                },
                 success: function(){
                     location.reload(true);
                 },
                 error: function(){
+                    //TODO: make error handling in empireController and return message
                 }
             });
         } else {
@@ -58,4 +56,24 @@ $(document).ready(function() {
         }
     });
 
+    $("#distribute_soldiers_btn").click(function() {
+        let amountOfSoldiers = $("#distribute_soldiers_input").val();
+        let country = $("#distribute_soldiers_cb").val();
+        if (!isNaN(amountOfSoldiers)) {
+            let distributeData = {"amountOfSoldiers": amountOfSoldiers, "country": country};
+            $.ajax({
+                url: 'empire/distribute',
+                type: 'POST',
+                data: distributeData,
+                success: function() {
+                    location.reload(true);
+                },
+                error: function() {
+                    alert("Something went wrong!");
+                }
+            })
+        } else {
+            alert("Input must be a number");
+        }
+    });
 });

@@ -44,9 +44,17 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     playernames.foreach(gameController.addPlayer)
     gameController.changeToGamePhase()
     if (gameController.status == Phase.REINFORCEMENT) {
-      Ok(views.html.empire(gameController))
-    }  else {
-      Ok(gameController.toString)
+      Ok("Success!")
+    } else {
+      BadRequest("something went wrong")
     }
+  }
+
+  def distribute = Action { request =>
+    val headers = request.body.asFormUrlEncoded.get
+    val amountOfSoldiers = headers("amountOfSoldiers").head.toInt
+    val country = headers("country").head.toString
+    gameController.distributeSoldiers(amountOfSoldiers, country)
+    Ok("Success")
   }
 }

@@ -71,15 +71,16 @@
                     <div class="move_plan col-md-4">
                         <div class="form-group">
                             <label for="country">Distribute soldiers to:</label>
-                            <select class="form-control" id="distribute-soldiers">
+                            <select class="form-control" id="distribute_soldiers_cb">
                                 @for(country <- controller.playerOnTurn.countries) {
-                                    <option value=country>@country</option>
+                                    <option>@country</option>
                                 }
                             </select>
                         </div>
                         <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
                         <div class="dirtibute_soldiers">
-                            <button type="button" id="distribute_soldiers" class="btn btn-dark">Distribute Soldiers</button>
+                            <input type="text" id="distribute_soldiers_input">
+                            <button type="button" id="distribute_soldiers_btn" class="btn btn-dark">Distribute Soldiers</button>
                         </div>
                     </div>
 
