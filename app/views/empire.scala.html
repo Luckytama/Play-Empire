@@ -90,14 +90,14 @@
                         <label for="country">Choose country to attack from:</label>
                         <select class="form-control" id="attack-from">
                             @for(country <- controller.playerOnTurn.countries) {
-                                <option value=country>@country</option>
+                                <option>@country</option>
                             }
                         </select>
                         <label for="country">Choose country to attack:</label>
                         <select class="form-control" id="attack-to">
-                            @for(country <- controller.playerOnTurn.countries) {
-                                <option value=country>@country</option>
-                            }
+                            <!--@for(country <- controller.playerOnTurn.countries) {
+                                <option>@country</option>
+                            }-->
                         </select>
                         <div class="attack">
                             <button type="button" id="attack" class="btn btn-dark">Attack</button>

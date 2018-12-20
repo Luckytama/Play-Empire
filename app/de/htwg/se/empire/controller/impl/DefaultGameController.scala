@@ -10,7 +10,7 @@ import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase.{Phase, _}
 import org.apache.logging.log4j.{LogManager, Logger}
 
-case class DefaultGameController @Inject() (var playingField: Grid) extends GameController {
+case class DefaultGameController @Inject()(var playingField: Grid) extends GameController {
 
   val injector: Injector = Guice.createInjector(new EmpireModule)
   val attackController: AttackController = injector.getInstance(classOf[AttackController])
@@ -110,6 +110,8 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
 
   override def getCurrentPhase: Phase = status
 
+  override def getGrid: Grid = playingField
+
   private def getNextPlayer: Player = {
     val idx = playingField.players.indexOf(playerOnTurn)
     if (idx + 1 == playingField.players.length) playingField.players.head else playingField.players(idx + 1)
@@ -134,7 +136,7 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
     if ((src.isDefined && target.isDefined)
       && src.get.adjacentCountries.contains(target.get.name)
       && (src.get.soldiers > soldiers) && (playerOnTurn.countries.contains(src.get)
-        && !playerOnTurn.countries.contains(target.get))) {
+      && !playerOnTurn.countries.contains(target.get))) {
       true
     } else {
       false

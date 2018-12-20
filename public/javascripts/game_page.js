@@ -1,5 +1,8 @@
 $(document).ready(function() {
 
+    //On reload functions
+    window.onload = loadAdjacentCountries();
+
     let players = [];
     let player_form_index=0;
     let playingField = "";
@@ -76,4 +79,29 @@ $(document).ready(function() {
             alert("Input must be a number");
         }
     });
+
+    $("#attack-from").change(loadAdjacentCountries);
+
+    function loadAdjacentCountries() {
+        let country = $("#attack-from").val();
+        let attackToData = {"country": country};
+        if (!country || !attackToData) {
+            return;
+        }
+        $.ajax({
+            url: 'empire/getAttackTo',
+            type: 'POST',
+            data: attackToData,
+            success: function(attackToCountries) {
+                $("#attack-to").empty();
+                attackToCountries.adjacentCountries.forEach(function(c) {
+                    console.log(c);
+                    $("#attack-to").append(new Option(c));
+                });
+            },
+            error: function(message) {
+                alert(message);
+            }
+        })
+    }
 });

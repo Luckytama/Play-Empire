@@ -9,8 +9,9 @@ import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
 import de.htwg.se.empire.view.gui.SwingGui
 import javax.inject.{Inject, Singleton}
+import org.json4s.JObject
 import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 @Singleton
 class EmpireController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
@@ -56,5 +57,12 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     val country = headers("country").head.toString
     gameController.distributeSoldiers(amountOfSoldiers, country)
     Ok("Success")
+  }
+
+  def getAttackTo = Action { request =>
+    val headers = request.body.asFormUrlEncoded.get
+    val country = headers("country").head.toString
+    val adjacencyList = Json.obj("adjacentCountries" -> gameController.getGrid.getCountry(country).get.adjacentCountries)
+    Ok(adjacencyList)
   }
 }
