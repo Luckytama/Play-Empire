@@ -96,15 +96,25 @@ $(document).ready(function () {
                 url: 'empire/attack',
                 type: 'POST',
                 data: attackData,
-                success: function() {
+                success: function () {
                     alert("Successfully attack");
                     location.reload(true);
                 },
-                error: function() {
+                error: function () {
                     aler("ohje");
                 }
             });
         }
+    });
+
+    $("#complete_round_btn").click(function () {
+        $.ajax({
+            url: 'empire/complete',
+            type: 'POST',
+            success: function () {
+                location.reload(true);
+            }
+        });
     });
 
     $("#attack-from").change(loadAdjacentCountries);

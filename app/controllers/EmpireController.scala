@@ -74,4 +74,9 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     gameController.attackCountry(attackCountry, defendCountry, soldiers)
     Ok("Success")
   }
+
+  def completeRound = Action { request =>
+    gameController.completeRound()
+    Ok("Success")
+  }
 }
