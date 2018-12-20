@@ -19,4 +19,4 @@ GET     /empire/newgame             controllers.EmpireController.newGame
 POST    /empire/startgame           controllers.EmpireController.startGame
 POST    /empire/distribute          controllers.EmpireController.distribute
 POST    /empire/getAttackTo         controllers.EmpireController.getAttackTo
-      
+POST    /empire/attack              controllers.EmpireController.executeAttack

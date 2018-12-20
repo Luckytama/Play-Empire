@@ -65,4 +65,13 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     val adjacencyList = Json.obj("adjacentCountries" -> gameController.getGrid.getCountry(country).get.adjacentCountries)
     Ok(adjacencyList)
   }
+
+  def executeAttack = Action { request =>
+    val headers = request.body.asFormUrlEncoded.get
+    val attackCountry = headers("attackCountry").head.toString
+    val defendCountry = headers("defendCountry").head.toString
+    val soldiers = headers("soldiers").head.toInt
+    gameController.attackCountry(attackCountry, defendCountry, soldiers)
+    Ok("Success")
+  }
 }
