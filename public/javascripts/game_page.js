@@ -17,22 +17,7 @@ $(document).ready(function () {
         player_form_index--;
     });
 
-    $("#btn_addPlayer").click(function () {
-        var playername = $("#input_playername").val();
-        if (playername === "") {
-            alert("form ist empty");
-            // add css to form_setup for empty input (class = "form_setup empty")
-        } else {
-            if (players === "") {
-                players = playername;
-            } else {
-                players += ", " + playername;
-            }
-            $("#players").text(players);
-        }
-    });
-
-    $("#start_game").click(function (event) {
+    $("#start_game").click(function () {
         $("#add_player_form input[type=text]").each(function () {
             if (this.value !== "") {
                 players.push(this.value);
@@ -52,12 +37,11 @@ $(document).ready(function () {
                     location.reload(true);
                 },
                 error: function () {
-                    //TODO: make error handling in empireController and return message
+                    showNotification(true, "Game can't be started.")
                 }
             });
         } else {
-            //TODO: Setup a notification bar for those error messeges
-            alert("Not enough players!")
+            showNotification(true, "You need at least 2 players to start the game");
         }
     });
 
@@ -74,7 +58,7 @@ $(document).ready(function () {
                     location.reload(true);
                 },
                 error: function () {
-                    alert("Something went wrong!");
+                    showNotification(true, "An Error occurred at distributing soldiers")
                 }
             })
         } else {
@@ -86,7 +70,7 @@ $(document).ready(function () {
         let attackCountry = $("#attack-from").val();
         let defendCountry = $("#attack-to").val();
         let amountOfSoldiers = $("#soldiers_to_attack").val();
-        if (!isNaN(amountOfSoldiers)) {
+        if (amountOfSoldiers !== "" && !isNaN(amountOfSoldiers)) {
             let attackData = {
                 "attackCountry": attackCountry,
                 "defendCountry": defendCountry,
@@ -96,14 +80,15 @@ $(document).ready(function () {
                 url: 'empire/attack',
                 type: 'POST',
                 data: attackData,
-                success: function () {
-                    alert("Successfully attack");
-                    location.reload(true);
-                },
-                error: function () {
-                    aler("ohje");
+                success: function (message) {
+                    showNotification(false, message);
+                    setTimeout(function () {
+                        location.reload(true);
+                    }, 2000);
                 }
             });
+        } else {
+            showNotification(true, "Choose an amount of soldiers to attack");
         }
     });
 
@@ -140,5 +125,17 @@ $(document).ready(function () {
                 alert(message);
             }
         })
+    }
+
+    function showNotification(isError, message) {
+        var notification = $(".notification_bar");
+        var notificationMessage = $(".notification_message");
+
+        if (isError) {
+            notification.addClass("error");
+        } else {
+            notification.addClass("success");
+        }
+        notificationMessage.text(message);
     }
 });

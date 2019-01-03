@@ -9,9 +9,8 @@ import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
 import de.htwg.se.empire.view.gui.SwingGui
 import javax.inject.{Inject, Singleton}
-import org.json4s.JObject
+import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.libs.json.{JsObject, Json}
 
 @Singleton
 class EmpireController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
@@ -55,14 +54,18 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     val headers = request.body.asFormUrlEncoded.get
     val amountOfSoldiers = headers("amountOfSoldiers").head.toInt
     val country = headers("country").head.toString
-    gameController.distributeSoldiers(amountOfSoldiers, country)
-    Ok("Success")
+    val distributedSoldiers: Int = gameController.distributeSoldiers(amountOfSoldiers, country)
+    if (distributedSoldiers > 0) {
+      Ok("Success")
+    } else {
+      BadRequest("Error")
+    }
   }
 
   def getAttackTo = Action { request =>
     val headers = request.body.asFormUrlEncoded.get
     val country = headers("country").head.toString
-    val adjacencyList = Json.obj("adjacentCountries" -> gameController.getGrid.getCountry(country).get.adjacentCountries)
+    val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
     Ok(adjacencyList)
   }
 
@@ -71,8 +74,8 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
     val attackCountry = headers("attackCountry").head.toString
     val defendCountry = headers("defendCountry").head.toString
     val soldiers = headers("soldiers").head.toInt
-    gameController.attackCountry(attackCountry, defendCountry, soldiers)
-    Ok("Success")
+    val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
+    Ok(result)
   }
 
   def completeRound = Action { request =>
