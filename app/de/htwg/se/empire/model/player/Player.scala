@@ -1,7 +1,7 @@
 package de.htwg.se.empire.model.player
 
 import de.htwg.se.empire.model.grid.Country
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.collection.mutable.ListBuffer
 
@@ -41,6 +41,10 @@ case class Player(name: String) {
   }
 
   def getCountryAmount: Int = countries.size
+
+  def containsCountry(country: String): Boolean = {
+    if (countries.exists(_.name.equals(country))) true else false
+  }
 
   override def toString: String = name + " => " + "countries: [" + countries.mkString(",") + "]"
 }

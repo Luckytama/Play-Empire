@@ -4,6 +4,9 @@
 }
 
 @main("HTWG Empire", "javascripts/game_page.js") {
+    <div class="notification_bar">
+        <p class="notification_message">Error Message</p>
+    </div>
     <section id="top">
         <div class="container wrapper">
             <h1>HTWG Empire</h1>
@@ -23,6 +26,7 @@
                         <label for="playingfield">Select you playingfield</label>
                         <select class="form-control" id="field-select">
                             <option value="EmpireData.json">Classic Risk Board</option>
+                            <option value="PresentationData.json">Small Presentation Board</option>
                         </select>
                     </div>
                     <div class="form_add_player" id="add_player_form">

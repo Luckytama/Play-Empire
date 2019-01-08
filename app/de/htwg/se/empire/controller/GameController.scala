@@ -1,6 +1,5 @@
 package de.htwg.se.empire.controller
 
-import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.util.Phase.Phase
 
@@ -20,13 +19,13 @@ trait GameController extends Publisher {
 
   def changeToReinforcementPhase(): Unit
 
-  def distributeSoldiers(soldiers: Int, countryName: String): Unit
+  def distributeSoldiers(soldiers: Int, countryName: String): Int
 
-  def attackCountry(srcCountry: String, targetCountry: String, soldiers: Int): Unit
+  def attackCountry(srcCountry: String, targetCountry: String, soldiers: Int): String
 
   def completeRound(): Unit
 
   def getCurrentPhase: Phase
 
-  def getGrid: Grid
+  def getAttackableCountries(country: String): List[String]
 }

@@ -63,23 +63,27 @@ case class DefaultGameController @Inject()(var playingField: Grid) extends GameC
     }
   }
 
-  override def distributeSoldiers(soldiers: Int, countryName: String): Unit = {
+  override def distributeSoldiers(soldiers: Int, countryName: String): Int = {
     if (status == REINFORCEMENT) {
       if (playerOnTurn.handholdSoldiers - soldiers >= 0) {
         reinforcementController.distributeSoldiers(playingField, countryName, soldiers)
         playerOnTurn.handholdSoldiers -= soldiers
         if (playerOnTurn.handholdSoldiers == 0) {
           changeToAttackPhase()
+          soldiers
         }
+        soldiers
       } else {
         println("You don't have that much soldiers to distribute")
+        0
       }
     } else {
       println("You are not in the Reinforcement Phase")
+      0
     }
   }
 
-  override def attackCountry(srcCountry: String, targetCountry: String, soldiers: Int): Unit = {
+  override def attackCountry(srcCountry: String, targetCountry: String, soldiers: Int): String = {
     if (checkIfAttackIsValid(srcCountry, targetCountry, soldiers)) {
       attackController.attackCountry(playingField.getCountry(srcCountry).get, playingField.getCountry(targetCountry).get, soldiers)
       if (playingField.getCountry(targetCountry).get.soldiers == 0) {
@@ -88,11 +92,12 @@ case class DefaultGameController @Inject()(var playingField: Grid) extends GameC
         playerOnTurn.addCountry(playingField.getCountry(targetCountry).get)
         status = MOVING
         moveSoldiers(playingField.getCountry(srcCountry).get, playingField.getCountry(targetCountry).get, playingField.getCountry(srcCountry).get.soldiers / 2)
+        "You win the battle and gain the country"
       } else {
-        println("Defender has defended his country")
+        "The Country was defended"
       }
     } else {
-      println("This is not a valid attack")
+      "This is not a valid attack"
     }
   }
 
@@ -110,7 +115,9 @@ case class DefaultGameController @Inject()(var playingField: Grid) extends GameC
 
   override def getCurrentPhase: Phase = status
 
-  override def getGrid: Grid = playingField
+  override def getAttackableCountries(country: String): List[String] = {
+    playingField.getCountry(country).get.adjacentCountries.filter(!playerOnTurn.containsCountry(_))
+  }
 
   private def getNextPlayer: Player = {
     val idx = playingField.players.indexOf(playerOnTurn)
