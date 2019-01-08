@@ -83,6 +83,7 @@ h1 {
 
 .notification_bar.success {
     background: blue;
+    color: #dbdbdb;
     overflow-y: hidden;
     transition-property: max-height;
     transition-duration: 50s;

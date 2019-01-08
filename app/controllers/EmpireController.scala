@@ -20,14 +20,12 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
   var playingField: Grid = injector.getInstance(classOf[Grid])
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
-  var gui = new SwingGui(gameController)
 
 
   def newGame = Action {
     playingField = injector.getInstance(classOf[Grid])
     gameController = injector.getInstance(classOf[GameController])
     tui = TUI(gameController)
-    gui = new SwingGui(gameController)
     Redirect("/empire")
   }
 
