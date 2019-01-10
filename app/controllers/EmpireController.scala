@@ -1,6 +1,6 @@
 package controllers
 
-import com.google.inject.{Guice, Injector}
+import com.google.inject.{ Guice, Injector }
 import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.se.empire.EmpireModule
 import de.htwg.se.empire.controller.GameController
@@ -8,11 +8,11 @@ import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents, Request }
 import utils.auth.DefaultEnv
 
 import scala.concurrent.ExecutionContext

@@ -4,7 +4,7 @@ import akka.stream.Materializer
 import javax.inject._
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * This is a simple filter that adds a header to all requests. It's

@@ -8,7 +8,7 @@ import javax.inject.Inject
 import models.User
 import models.daos.UserDAO
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Handles actions to users.

@@ -10,14 +10,14 @@ import com.mohiva.play.silhouette.impl.providers._
 import forms.SignUpForm
 import javax.inject.Inject
 import models.User
-import models.services.{AuthTokenService, UserService}
+import models.services.{ AuthTokenService, UserService }
 import org.webjars.play.WebJarsUtil
-import play.api.i18n.{I18nSupport, Messages}
-import play.api.libs.mailer.{Email, MailerClient}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.i18n.{ I18nSupport, Messages }
+import play.api.libs.mailer.{ Email, MailerClient }
+import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents, Request }
 import utils.auth.DefaultEnv
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * The `Sign Up` controller.
