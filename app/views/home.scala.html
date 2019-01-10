@@ -1,11 +1,7 @@
-@
-import controllers.AssetsFinder
-@
-import org.webjars.play.WebJarsUtil
-@
-import play.api.i18n.Messages
-@
-import play.api.mvc.RequestHeader
+@import controllers.AssetsFinder
+@import org.webjars.play.WebJarsUtil
+@import play.api.i18n.Messages
+@import play.api.mvc.RequestHeader
 
 @(user: models.User)( implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 

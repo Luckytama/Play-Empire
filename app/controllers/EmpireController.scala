@@ -18,10 +18,10 @@ import utils.auth.DefaultEnv
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class EmpireController @Inject()(cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit
-                                                                                               webJarsUtil: WebJarsUtil,
-                                                                                               assets: AssetsFinder,
-                                                                                               ex: ExecutionContext
+class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit
+  webJarsUtil: WebJarsUtil,
+  assets: AssetsFinder,
+  ex: ExecutionContext
 ) extends AbstractController(cc) with I18nSupport {
 
   var injector: Injector = Guice.createInjector(new EmpireModule)

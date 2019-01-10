@@ -1,13 +1,9 @@
-@
-import controllers.AssetsFinder
-@
-import org.webjars.play.WebJarsUtil
-@
-import play.api.i18n.Messages
-@
-import play.api.mvc.RequestHeader
+@import controllers.AssetsFinder
+@import org.webjars.play.WebJarsUtil
+@import play.api.i18n.Messages
+@import play.api.mvc.RequestHeader
 
-@(controller: de.htwg.se.empire.controller.GameController)( implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@(controller: de.htwg.se.empire.controller.GameController)(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 @phases = @{
     de.htwg.se.empire.util.Phase
 }

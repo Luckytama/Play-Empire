@@ -17,38 +17,38 @@ import utils.auth.DefaultEnv
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * The `Reset Password` controller.
-  *
-  * @param components             The Play controller components.
-  * @param silhouette             The Silhouette stack.
-  * @param userService            The user service implementation.
-  * @param authInfoRepository     The auth info repository.
-  * @param passwordHasherRegistry The password hasher registry.
-  * @param authTokenService       The auth token service implementation.
-  * @param webJarsUtil            The webjar util.
-  * @param assets                 The Play assets finder.
-  * @param ex                     The execution context.
-  */
-class ResetPasswordController @Inject()(
-                                         components: ControllerComponents,
-                                         silhouette: Silhouette[DefaultEnv],
-                                         userService: UserService,
-                                         authInfoRepository: AuthInfoRepository,
-                                         passwordHasherRegistry: PasswordHasherRegistry,
-                                         authTokenService: AuthTokenService
-                                       )(
-                                         implicit
-                                         webJarsUtil: WebJarsUtil,
-                                         assets: AssetsFinder,
-                                         ex: ExecutionContext
-                                       ) extends AbstractController(components) with I18nSupport {
+ * The `Reset Password` controller.
+ *
+ * @param components             The Play controller components.
+ * @param silhouette             The Silhouette stack.
+ * @param userService            The user service implementation.
+ * @param authInfoRepository     The auth info repository.
+ * @param passwordHasherRegistry The password hasher registry.
+ * @param authTokenService       The auth token service implementation.
+ * @param webJarsUtil            The webjar util.
+ * @param assets                 The Play assets finder.
+ * @param ex                     The execution context.
+ */
+class ResetPasswordController @Inject() (
+  components: ControllerComponents,
+  silhouette: Silhouette[DefaultEnv],
+  userService: UserService,
+  authInfoRepository: AuthInfoRepository,
+  passwordHasherRegistry: PasswordHasherRegistry,
+  authTokenService: AuthTokenService
+)(
+  implicit
+  webJarsUtil: WebJarsUtil,
+  assets: AssetsFinder,
+  ex: ExecutionContext
+) extends AbstractController(components) with I18nSupport {
 
   /**
-    * Views the `Reset Password` page.
-    *
-    * @param token The token to identify a user.
-    * @return The result to display.
-    */
+   * Views the `Reset Password` page.
+   *
+   * @param token The token to identify a user.
+   * @return The result to display.
+   */
   def view(token: UUID) = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     authTokenService.validate(token).map {
       case Some(_) => Ok(views.html.resetPassword(ResetPasswordForm.form, token))
@@ -57,11 +57,11 @@ class ResetPasswordController @Inject()(
   }
 
   /**
-    * Resets the password.
-    *
-    * @param token The token to identify a user.
-    * @return The result to display.
-    */
+   * Resets the password.
+   *
+   * @param token The token to identify a user.
+   * @return The result to display.
+   */
   def submit(token: UUID) = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     authTokenService.validate(token).flatMap {
       case Some(authToken) =>

@@ -10,19 +10,19 @@ import utils.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
-  * A job which cleanup invalid auth tokens.
-  *
-  * @param service The auth token service implementation.
-  * @param clock   The clock implementation.
-  */
-class AuthTokenCleaner @Inject()(
-                                  service: AuthTokenService,
-                                  clock: Clock)
+ * A job which cleanup invalid auth tokens.
+ *
+ * @param service The auth token service implementation.
+ * @param clock   The clock implementation.
+ */
+class AuthTokenCleaner @Inject() (
+  service: AuthTokenService,
+  clock: Clock)
   extends Actor with Logger {
 
   /**
-    * Process the received messages.
-    */
+   * Process the received messages.
+   */
   def receive: Receive = {
     case Clean =>
       val start = clock.now.getMillis
@@ -47,8 +47,8 @@ class AuthTokenCleaner @Inject()(
 }
 
 /**
-  * The companion object.
-  */
+ * The companion object.
+ */
 object AuthTokenCleaner {
 
   case object Clean

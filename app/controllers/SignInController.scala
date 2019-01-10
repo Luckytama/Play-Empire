@@ -20,47 +20,47 @@ import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
-  * The `Sign In` controller.
-  *
-  * @param components             The Play controller components.
-  * @param silhouette             The Silhouette stack.
-  * @param userService            The user service implementation.
-  * @param credentialsProvider    The credentials provider.
-  * @param socialProviderRegistry The social provider registry.
-  * @param configuration          The Play configuration.
-  * @param clock                  The clock instance.
-  * @param webJarsUtil            The webjar util.
-  * @param assets                 The Play assets finder.
-  */
-class SignInController @Inject()(
-                                  components: ControllerComponents,
-                                  silhouette: Silhouette[DefaultEnv],
-                                  userService: UserService,
-                                  credentialsProvider: CredentialsProvider,
-                                  socialProviderRegistry: SocialProviderRegistry,
-                                  configuration: Configuration,
-                                  clock: Clock
-                                )(
-                                  implicit
-                                  webJarsUtil: WebJarsUtil,
-                                  assets: AssetsFinder,
-                                  ex: ExecutionContext
-                                ) extends AbstractController(components) with I18nSupport {
+ * The `Sign In` controller.
+ *
+ * @param components             The Play controller components.
+ * @param silhouette             The Silhouette stack.
+ * @param userService            The user service implementation.
+ * @param credentialsProvider    The credentials provider.
+ * @param socialProviderRegistry The social provider registry.
+ * @param configuration          The Play configuration.
+ * @param clock                  The clock instance.
+ * @param webJarsUtil            The webjar util.
+ * @param assets                 The Play assets finder.
+ */
+class SignInController @Inject() (
+  components: ControllerComponents,
+  silhouette: Silhouette[DefaultEnv],
+  userService: UserService,
+  credentialsProvider: CredentialsProvider,
+  socialProviderRegistry: SocialProviderRegistry,
+  configuration: Configuration,
+  clock: Clock
+)(
+  implicit
+  webJarsUtil: WebJarsUtil,
+  assets: AssetsFinder,
+  ex: ExecutionContext
+) extends AbstractController(components) with I18nSupport {
 
   /**
-    * Views the `Sign In` page.
-    *
-    * @return The result to display.
-    */
+   * Views the `Sign In` page.
+   *
+   * @return The result to display.
+   */
   def view = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
   }
 
   /**
-    * Handles the submitted form.
-    *
-    * @return The result to display.
-    */
+   * Handles the submitted form.
+   *
+   * @return The result to display.
+   */
   def submit = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     SignInForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.signIn(form, socialProviderRegistry))),

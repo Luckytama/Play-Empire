@@ -1,13 +1,9 @@
-@
-import controllers.AssetsFinder
-@
-import org.webjars.play.WebJarsUtil
-@
-import play.api.i18n.Messages
-@
-import play.api.mvc.RequestHeader
+@import controllers.AssetsFinder
+@import org.webjars.play.WebJarsUtil
+@import play.api.i18n.Messages
+@import play.api.mvc.RequestHeader
 
-@()( implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@()(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 
 @main("Empire | About") {
     <h1 class="top">About Empire</h1>
