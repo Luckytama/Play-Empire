@@ -1,9 +1,18 @@
-@(controller: de.htwg.se.empire.controller.GameController)
+@
+import controllers.AssetsFinder
+@
+import org.webjars.play.WebJarsUtil
+@
+import play.api.i18n.Messages
+@
+import play.api.mvc.RequestHeader
+
+@(controller: de.htwg.se.empire.controller.GameController)( implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 @phases = @{
     de.htwg.se.empire.util.Phase
 }
 
-@main("HTWG Empire", "javascripts/game_page.js") {
+@main("HTWG Empire") {
     <div class="notification_bar">
         <p class="notification_message">Error Message</p>
     </div>
@@ -76,9 +85,9 @@
                         <div class="form-group">
                             <label for="country">Distribute soldiers to:</label>
                             <select class="form-control" id="distribute_soldiers_cb">
-                                @for(country <- controller.playerOnTurn.countries) {
-                                    <option>@country</option>
-                                }
+                            @for(country <- controller.playerOnTurn.countries) {
+                                <option>@country</option>
+                            }
                             </select>
                         </div>
                         <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
@@ -93,9 +102,9 @@
                     <div class="move_plan col-md-4">
                         <label for="country">Choose country to attack from:</label>
                         <select class="form-control" id="attack-from">
-                            @for(country <- controller.playerOnTurn.countries) {
-                                <option>@country</option>
-                            }
+                        @for(country <- controller.playerOnTurn.countries) {
+                            <option>@country</option>
+                        }
                         </select>
                         <label for="country">Choose country to attack:</label>
                         <select class="form-control" id="attack-to">

@@ -20,8 +20,8 @@ case class TUI(gameController: GameController) extends Reactor {
   }
 
   private def processSetupInput(): Unit = {
-//    println("Enter path to Playingfield.json:")
-//    val path = readLine()
+    //    println("Enter path to Playingfield.json:")
+    //    val path = readLine()
     gameController.setUpPhase("/Users/michael/Documents/Web-Technologien/Play-Empire/app/playingfield/EmpireData.json")
     println("Enter Players (Comma seperated):")
     val players = readLine()

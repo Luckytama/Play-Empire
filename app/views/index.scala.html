@@ -1,5 +1,16 @@
-@main("Empire | About", "javascripts/about_page.js") {
-    <h1>About Empire</h1>
+@
+import controllers.AssetsFinder
+@
+import org.webjars.play.WebJarsUtil
+@
+import play.api.i18n.Messages
+@
+import play.api.mvc.RequestHeader
+
+@()( implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+
+@main("Empire | About") {
+    <h1 class="top">About Empire</h1>
     <p>
         Risk is a strategy board game of diplomacy, conflict and conquest[1] for two to six
         players. The standard version is played on a board depicting a political map of the
@@ -24,7 +35,7 @@
 
     <p>
         The following image shows a standard map of the playingfield. <br>
-        <img src=@routes.Assets.versioned("images/Risk_game_map_fixed.png")>
+        <img src="assets/images/Risk_game_map_fixed.png">
     </p>
     <button type="button" class="btn_startNewGame btn-dark">Start a new Game!</button>
 }

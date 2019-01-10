@@ -1,0 +1,7 @@
+{
+  "name": "sudoku",
+  "short_name": "sudoku",
+  "description": "Sudoku for HTWG lecture Webtechnologies",
+  "start_url": "/",
+  "display": "standalone"
+}
