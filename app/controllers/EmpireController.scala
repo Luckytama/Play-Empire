@@ -10,15 +10,16 @@ import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
 import javax.inject.{ Inject, Singleton }
 import org.webjars.play.WebJarsUtil
-import play.api.i18n.I18nSupport
+import play.api.i18n.{ I18nSupport, Messages }
 import play.api.libs.json.Json
 import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents, Request }
 import utils.auth.DefaultEnv
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit
+class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(
+  implicit
   webJarsUtil: WebJarsUtil,
   assets: AssetsFinder,
   ex: ExecutionContext
@@ -30,18 +31,22 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
 
-  def newGame = silhouette.UnsecuredAction {
-    playingField = injector.getInstance(classOf[Grid])
-    gameController = injector.getInstance(classOf[GameController])
-    tui = TUI(gameController)
-    Redirect("/empire")
-  }
-
-  def empire = silhouette.UnsecuredAction.apply { implicit request: Request[AnyContent] =>
+  def view = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
     Ok(views.html.empire(gameController))
   }
 
-  def startGame = silhouette.UnsecuredAction.apply { implicit request: Request[AnyContent] =>
+  def newGame = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
+    playingField = injector.getInstance(classOf[Grid])
+    gameController = injector.getInstance(classOf[GameController])
+    tui = TUI(gameController)
+    Redirect(routes.EmpireController.empire()).flashing("success" -> Messages("empire.started"))
+  }
+
+  def empire = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
+    Redirect(routes.EmpireController.view())
+  }
+
+  def startGame = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
     val headers = request.body.asFormUrlEncoded.get
     val playernames = headers.get("players[]")
     val playingfieldFile = headers("playingfield").head
@@ -50,7 +55,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     playernames.foreach(gameController.addPlayer)
     gameController.changeToGamePhase()
     if (gameController.status == Phase.REINFORCEMENT) {
-      Ok("Success")
+      Redirect(routes.EmpireController.empire()).flashing("info" -> Messages("empire.started"))
     } else {
       BadRequest("Error")
     }

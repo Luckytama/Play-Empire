@@ -9,8 +9,13 @@ h1 {
     font-size: 30px;
 }
 
+.navbar {
+    margin-bottom: 0;
+}
+
 .starter-template {
-    padding: 40px 15px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 input, button {
@@ -220,6 +225,10 @@ format('truetype');
 format('truetype');
 }
 
+.alert {
+    margin-bottom: 0;
+}
+
 #field-select {
     width: auto;
 }
@@ -228,18 +237,17 @@ format('truetype');
     padding-top: 10px;
 }
 
-#top {
+.top {
     background: rgba(14, 4, 5, 0.61) url(../images/connectwork.png) fixed;
     box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.1) inset;
     padding: auto;
-    position: relative;
 }
 
-#top .wrapper {
+.top .wrapper {
     padding: 15px;
 }
 
-#top .wrapper h1 {
+.top .wrapper h1 {
     font-size: 40px;
     color: #dbdbdb;
     text-shadow: 4px 4px 4px #000000;
@@ -250,40 +258,6 @@ h1 {
     margin-top: 1em !important;
     margin-bottom: 2em !important;
     text-align: center;
-}
-
-.notification_bar {
-    height: 80px;
-    text-align: center;
-    vertical-align: middle;
-    position: relative;
-    max-height: 0;
-}
-
-.notification_bar.error {
-    background: red;
-    overflow-y: hidden;
-    transition-property: max-height;
-    transition-duration: 50s;
-    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    max-height: 500px;
-}
-
-.notification_bar.success {
-    background: blue;
-    color: #dbdbdb;
-    overflow-y: hidden;
-    transition-property: max-height;
-    transition-duration: 50s;
-    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    max-height: 500px;
-}
-
-.notification_bar p {
-    position: absolute;
-    top: 45%;
-    left: 0;
-    right: 0;
 }
 
 .status {

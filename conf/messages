@@ -56,6 +56,7 @@ invalid.reset.link=The link isn't valid anymore! Please request a new link to re
 password.reset=We have reset your password. You can now sign in with your credentials.
 account.activated=Your account is now activated! Please sign in to use your new account.
 password.changed=Your password has been changed.
+game.started=New Game started!
 google=Google
 facebook=Facebook
 twitter=Twitter

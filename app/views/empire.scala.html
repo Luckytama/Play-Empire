@@ -9,14 +9,11 @@
 }
 
 @main("HTWG Empire") {
-    <div class="notification_bar">
-        <p class="notification_message">Error Message</p>
-    </div>
-    <section id="top">
+    <div class="top">
         <div class="container wrapper">
             <h1>HTWG Empire</h1>
         </div>
-    </section>
+    </div>
     <div class="status container">
         <div class="row col-md-12">
             <p>Game Status: @controller.status</p>
@@ -43,7 +40,7 @@
                     <button type="button" id="delete_player" class="btn btn-dark">-</button>
                     <button type="button" id="add_player" class="btn btn-dark">+</button>
                     <div class="start_game">
-                        <button type="button" id="start_game" class="btn btn-dark">Start Game</button>
+                        <button type="submit" id="start_game" class="btn btn-dark">Start Game</button>
                     </div>
                 </div>
             }
