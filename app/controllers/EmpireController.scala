@@ -7,13 +7,18 @@ import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
-import de.htwg.se.empire.view.gui.SwingGui
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.libs.json._
+import play.api.mvc._
+import play.api.libs.streams.ActorFlow
+import akka.actor.ActorSystem
+import akka.stream.Materializer
+import akka.actor._
+
+import scala.swing.Reactor
 
 @Singleton
-class EmpireController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class EmpireController @Inject()(cc: ControllerComponents)( implicit system: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
 
   var injector: Injector = Guice.createInjector(new EmpireModule)
   var parser: Parser = injector.getInstance(classOf[Parser])
@@ -21,6 +26,35 @@ class EmpireController @Inject()(cc: ControllerComponents) extends AbstractContr
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
 
+  def ws: WebSocket = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef { out =>
+      println("connection established!")
+      EmpireWebSocketActorFactory.create(out)
+    }
+  }
+
+  object EmpireWebSocketActorFactory {
+    def create(out: ActorRef): Props = {
+      Props(new EmpireWebSocketActor(out))
+    }
+  }
+
+  class EmpireWebSocketActor(out: ActorRef) extends Actor with Reactor {
+    listenTo(gameController)
+
+    def receive: PartialFunction[Any, Unit] = {
+      case msg: String =>
+        val json = Json.parse(msg)
+        val functionName = json("function").toString().replace("\"", "")
+        val country = json("country").toString().replace("\"", "")
+        if (functionName == "getAdjacentCountries") {
+          val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
+          out ! adjacencyList.toString()
+        }
+    }
+
+
+  }
 
   def newGame = Action {
     playingField = injector.getInstance(classOf[Grid])

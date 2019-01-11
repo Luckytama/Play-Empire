@@ -1,7 +1,50 @@
+function connectWebSocket(websocket) {
+    console.log("Connecting to Websocket");
+
+    websocket.onmessage = function (e) {
+        if (typeof e.data === "string") {
+            let attackToCountries = JSON.parse(e.data);
+            $("#attack-to").empty();
+            attackToCountries.adjacentCountries.forEach(function (c) {
+                $("#attack-to").append(new Option(c));
+            });
+        }
+        else if (e.data instanceof ArrayBuffer) {
+            console.log('ArrayBuffer received: ' + e.data);
+        }
+        else if (e.data instanceof Blob) {
+            console.log('Blob received: ' + e.data);
+        }
+    };
+
+    websocket.onopen = function(event) {
+        console.log("Connected to Websocket");
+        if ($("#attack-from").val() !== undefined) {
+            let country = $("#attack-from").val();
+            let data = {};
+            data.function = "getAdjacentCountries";
+            data.country = country;
+            websocket.send(JSON.stringify(data));
+        }
+    };
+
+    websocket.onclose = function () {
+        console.log('Connection with Websocket Closed!');
+    };
+
+    websocket.onerror = function (error) {
+        console.log('Error in Websocket Occured: ' + error);
+    };
+
+
+}
+
+
 $(document).ready(function () {
 
+    var websocket = new WebSocket("ws://localhost:9000/ws");
     //On reload functions
-    window.onload = loadAdjacentCountries();
+    window.onload = connectWebSocket(websocket);
 
     let players = [];
     let player_form_index = 0;
@@ -106,25 +149,10 @@ $(document).ready(function () {
 
     function loadAdjacentCountries() {
         let country = $("#attack-from").val();
-        let attackToData = {"country": country};
-        if (!country || !attackToData) {
-            return;
-        }
-        $.ajax({
-            url: 'empire/getAttackTo',
-            type: 'POST',
-            data: attackToData,
-            success: function (attackToCountries) {
-                $("#attack-to").empty();
-                attackToCountries.adjacentCountries.forEach(function (c) {
-                    console.log(c);
-                    $("#attack-to").append(new Option(c));
-                });
-            },
-            error: function (message) {
-                alert(message);
-            }
-        })
+        let data = {};
+        data.function = "getAdjacentCountries";
+        data.country = country;
+        websocket.send(JSON.stringify(data));
     }
 
     function showNotification(isError, message) {
