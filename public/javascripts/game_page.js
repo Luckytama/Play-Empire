@@ -1,8 +1,5 @@
 $(document).ready(function () {
 
-    //On reload functions
-    window.onload = loadAdjacentCountries();
-
     let players = [];
     let player_form_index = 0;
     let playingField = "";
@@ -36,9 +33,6 @@ $(document).ready(function () {
                 success: function () {
                     location.reload(true);
                 },
-                error: function () {
-                    showNotification(true, "Game can't be started.")
-                }
             });
         } else {
             showNotification(true, "You need at least 2 players to start the game");
@@ -80,15 +74,10 @@ $(document).ready(function () {
                 url: '/empire/attack',
                 type: 'POST',
                 data: attackData,
-                success: function (message) {
-                    showNotification(false, message);
-                    setTimeout(function () {
-                        location.reload(true);
-                    }, 2000);
+                success: function () {
+                    location.reload(true);
                 }
             });
-        } else {
-            showNotification(true, "Choose an amount of soldiers to attack");
         }
     });
 
@@ -105,7 +94,7 @@ $(document).ready(function () {
     $("#attack-from").change(loadAdjacentCountries);
 
     var csrf_token = $('input[name="csrfToken"]').val();
-    $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
+    $.ajaxPrefilter(function (options) {
         if (options.type.toLowerCase() === "post") {
             // initialize `data` to empty string if it does not exist
             options.data = options.data || "";
@@ -140,4 +129,7 @@ $(document).ready(function () {
             }
         })
     }
+
+    //On reload functions
+    window.onload = loadAdjacentCountries();
 });

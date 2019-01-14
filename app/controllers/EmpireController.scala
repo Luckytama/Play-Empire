@@ -43,7 +43,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       playingField = injector.getInstance(classOf[Grid])
       gameController = injector.getInstance(classOf[GameController])
       tui = TUI(gameController)
-      Redirect(routes.EmpireController.empire()).flashing("success" -> Messages("empire.started"))
+      Redirect(routes.EmpireController.view()).flashing("success" -> Messages("game.started"))
   }
 
   def empire: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
@@ -61,9 +61,9 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       playernames.foreach(gameController.addPlayer)
       gameController.changeToGamePhase()
       if (gameController.status == Phase.REINFORCEMENT) {
-        Redirect(routes.EmpireController.empire()).flashing("info" -> Messages("empire.started"))
+        Redirect(routes.EmpireController.view()).flashing("info" -> Messages("game.started"))
       } else {
-        BadRequest("Error")
+        Redirect(routes.EmpireController.view()).flashing("error" -> Messages("game.started.error"))
       }
   }
 
@@ -95,7 +95,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       val defendCountry = headers("defendCountry").head.toString
       val soldiers = headers("soldiers").head.toInt
       val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
-      Ok(result)
+      Redirect(routes.EmpireController.view()).flashing("info" -> result)
   }
 
   def completeRound: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
