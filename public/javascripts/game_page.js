@@ -1,8 +1,5 @@
 $(document).ready(function () {
 
-    //On reload functions
-    window.onload = loadAdjacentCountries();
-
     let players = [];
     let player_form_index = 0;
     let playingField = "";
@@ -27,7 +24,7 @@ $(document).ready(function () {
         if (players.length >= 2) {
             let starter = {
                 "players": players,
-                "playingfield": playingField
+                "playingfield": playingField,
             };
             $.ajax({
                 url: '/empire/startgame',
@@ -36,9 +33,6 @@ $(document).ready(function () {
                 success: function () {
                     location.reload(true);
                 },
-                error: function () {
-                    showNotification(true, "Game can't be started.")
-                }
             });
         } else {
             showNotification(true, "You need at least 2 players to start the game");
@@ -51,7 +45,7 @@ $(document).ready(function () {
         if (!isNaN(amountOfSoldiers)) {
             let distributeData = {"amountOfSoldiers": amountOfSoldiers, "country": country};
             $.ajax({
-                url: 'empire/distribute',
+                url: '/empire/distribute',
                 type: 'POST',
                 data: distributeData,
                 success: function () {
@@ -77,24 +71,19 @@ $(document).ready(function () {
                 "soldiers": amountOfSoldiers
             };
             $.ajax({
-                url: 'empire/attack',
+                url: '/empire/attack',
                 type: 'POST',
                 data: attackData,
-                success: function (message) {
-                    showNotification(false, message);
-                    setTimeout(function () {
-                        location.reload(true);
-                    }, 2000);
+                success: function () {
+                    location.reload(true);
                 }
             });
-        } else {
-            showNotification(true, "Choose an amount of soldiers to attack");
         }
     });
 
     $("#complete_round_btn").click(function () {
         $.ajax({
-            url: 'empire/complete',
+            url: '/empire/complete',
             type: 'POST',
             success: function () {
                 location.reload(true);
@@ -104,6 +93,20 @@ $(document).ready(function () {
 
     $("#attack-from").change(loadAdjacentCountries);
 
+    var csrf_token = $('input[name="csrfToken"]').val();
+    $.ajaxPrefilter(function (options) {
+        if (options.type.toLowerCase() === "post") {
+            // initialize `data` to empty string if it does not exist
+            options.data = options.data || "";
+
+            // add leading ampersand if `data` is non-empty
+            options.data += options.data ? "&" : "";
+
+            // add _token entry
+            options.data += "csrfToken=" + encodeURIComponent(csrf_token);
+        }
+    });
+
     function loadAdjacentCountries() {
         let country = $("#attack-from").val();
         let attackToData = {"country": country};
@@ -111,7 +114,7 @@ $(document).ready(function () {
             return;
         }
         $.ajax({
-            url: 'empire/getAttackTo',
+            url: '/empire/getAttackTo',
             type: 'POST',
             data: attackToData,
             success: function (attackToCountries) {
@@ -127,15 +130,6 @@ $(document).ready(function () {
         })
     }
 
-    function showNotification(isError, message) {
-        var notification = $(".notification_bar");
-        var notificationMessage = $(".notification_message");
-
-        if (isError) {
-            notification.addClass("error");
-        } else {
-            notification.addClass("success");
-        }
-        notificationMessage.text(message);
-    }
+    //On reload functions
+    window.onload = loadAdjacentCountries();
 });
