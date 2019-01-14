@@ -1,6 +1,7 @@
 table, th, td, caption {
     border-collapse: collapse;
     border-spacing: 5px;
+    border-color: #1d2124;
     padding: 5px;
     text-align: left;
     margin: auto;
@@ -36,66 +37,45 @@ format('truetype');
     width: auto;
 }
 
-.start_game {
-    padding-top: 10px;
-}
-
 #top {
     background: rgba(14, 4, 5, 0.61) url(../images/connectwork.png) fixed;
     box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.1) inset;
-    padding: auto;
     position: relative;
+    text-align: center;
+    height: 200px;
 }
 
 #top .wrapper {
-    padding: 15px;
+    padding: 10px;
 }
 
 #top .wrapper h1 {
     font-size: 40px;
     color: #dbdbdb;
     text-shadow: 4px 4px 4px #000000;
-    margin: auto;
+    margin-top: 1em;
 }
 
-h1 {
-    margin-top: 1em !important;
-    margin-bottom: 2em !important;
-    text-align: center;
+.btn {
+    margin: 5px;
 }
+
+/*h1 {*/
+    /*margin-top: 1em !important;*/
+    /*margin-bottom: 2em !important;*/
+    /*text-align: center;*/
+/*}*/
 
 .notification_bar {
-    height: 80px;
-    text-align: center;
-    vertical-align: middle;
+
     position: relative;
-    max-height: 0;
 }
 
-.notification_bar.error {
-    background: red;
-    overflow-y: hidden;
-    transition-property: max-height;
-    transition-duration: 50s;
-    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    max-height: 500px;
-}
-
-.notification_bar.success {
-    background: blue;
-    color: #dbdbdb;
-    overflow-y: hidden;
-    transition-property: max-height;
-    transition-duration: 50s;
-    transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
-    max-height: 500px;
-}
-
-.notification_bar p {
-    position: absolute;
-    top: 45%;
-    left: 0;
-    right: 0;
+#alert{
+    left:2%;
+    width: 96%;
+    display: none;
+    z-index: 2;
 }
 
 .status {
@@ -106,6 +86,11 @@ h1 {
 .playingfield {
     padding: 5px;
     margin: auto;
+}
+
+.game_status {
+    padding: 5px;
+    border-spacing: 5px;
 }
 
 .phase_idle {

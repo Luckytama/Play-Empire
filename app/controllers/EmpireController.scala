@@ -14,6 +14,7 @@ import play.api.libs.streams.ActorFlow
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.actor._
+import de.htwg.se.empire.model.grid.Country
 
 import scala.swing.Reactor
 
@@ -46,14 +47,89 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
       case msg: String =>
         val json = Json.parse(msg)
         val functionName = json("function").toString().replace("\"", "")
-        val country = json("country").toString().replace("\"", "")
-        if (functionName == "getAdjacentCountries") {
-          val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
-          out ! adjacencyList.toString()
+        functionName match {
+          case "getAttackableCountries" => {
+            val country = json("country").toString().replace("\"", "")
+            val attackableCountries = Json.obj("attackableCountries" -> gameController.getAttackableCountries(country))
+            out ! attackableCountries.toString
+          }
+          case "getStatus" => out ! getStatus
+          case "getPlayerInfo" => out ! getPlayerInfo
+          case "getCountries" => out ! getCountries
+          case "getHandholdSoldiers" => out ! getHandholdSoldiers
+          case "distributeSoldiers" => {
+            val soldiersToDistribute = json("soldiersToDistribute").toString().replace("\"", "")
+            val CountryToDistribute = json("countryToDistribute").toString().replace("\"", "")
+            out ! distributeSoldiers(soldiersToDistribute.toInt, CountryToDistribute)
+          }
+          case "attackCountry" => {
+            val attackCountry = json("attackCountry").toString().replace("\"", "")
+            val defendCountry = json("defendCountry").toString().replace("\"", "")
+            val amountSoldiers = json("amountSoldiers").toString().replace("\"", "")
+            out ! executeAttack(attackCountry, defendCountry, amountSoldiers.toInt)
+          }
+          case "completeRound" => out ! completeRound
         }
     }
+  }
 
+  def getAttackableCountries(country:String):String = {
+    val attackableCountries = Json.obj("attackableCountries" -> gameController.getAttackableCountries(country))
+    attackableCountries.toString
+  }
 
+  def completeRound:String = {
+    gameController.completeRound()
+    val message = Json.obj("success" -> "success")
+    message.toString
+  }
+
+  def executeAttack(attackCountry:String, defendCountry:String, soldiers:Int):String = {
+    val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
+    val attackMessage = Json.obj("attackMessage" -> result)
+    attackMessage.toString
+  }
+
+  def distributeSoldiers(soldiers:Int, country:String):String  = {
+    println(gameController.status)
+    val distributedSoldiers: Int = gameController.distributeSoldiers(soldiers, country)
+    if (distributedSoldiers > 0) {
+      val soldiersToDistribute = Json.obj("soldiersToDistribute" -> distributedSoldiers)
+      soldiersToDistribute.toString
+    } else {
+      println("distributeSoldiers failed")
+      val soldiersToDistribute = Json.obj("soldiersToDistribute" -> distributedSoldiers)
+      soldiersToDistribute.toString
+    }
+  }
+
+  implicit val writer: Writes[Country] = (c: Country) => {
+    Json.obj("name" -> c.name, "soldiers" -> c.soldiers, "adjacentCountries" -> c.adjacentCountries)
+
+  }
+
+  def getHandholdSoldiers:String = {
+    val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.playerOnTurn.handholdSoldiers)
+    handholdSoldiers.toString
+  }
+
+  def getCountries:String = {
+    val countries = Json.obj("countries" -> gameController.playerOnTurn.countries)
+    countries.toString
+  }
+
+  def getPlayerInfo:String = {
+    val playerOnTurn = Json.obj("playerInfo" -> Json.obj(
+      "playerOnTurn" -> JsString(gameController.playerOnTurn.name),
+      "numberOfCountries" -> JsNumber(gameController.playerOnTurn.getCountryAmount),
+      "numberOfSoldiers" -> JsNumber(gameController.playerOnTurn.getNumberOfAllSoldiers)
+    ))
+    playerOnTurn.toString
+  }
+
+  def getStatus:String = {
+    val status = Json.obj("status" -> gameController.status.toString)
+    status.toString
   }
 
   def newGame = Action {
@@ -80,38 +156,5 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
     } else {
       BadRequest("something went wrong")
     }
-  }
-
-  def distribute = Action { request =>
-    val headers = request.body.asFormUrlEncoded.get
-    val amountOfSoldiers = headers("amountOfSoldiers").head.toInt
-    val country = headers("country").head.toString
-    val distributedSoldiers: Int = gameController.distributeSoldiers(amountOfSoldiers, country)
-    if (distributedSoldiers > 0) {
-      Ok("Success")
-    } else {
-      BadRequest("Error")
-    }
-  }
-
-  def getAttackTo = Action { request =>
-    val headers = request.body.asFormUrlEncoded.get
-    val country = headers("country").head.toString
-    val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
-    Ok(adjacencyList)
-  }
-
-  def executeAttack = Action { request =>
-    val headers = request.body.asFormUrlEncoded.get
-    val attackCountry = headers("attackCountry").head.toString
-    val defendCountry = headers("defendCountry").head.toString
-    val soldiers = headers("soldiers").head.toInt
-    val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
-    Ok(result)
-  }
-
-  def completeRound = Action { request =>
-    gameController.completeRound()
-    Ok("Success")
   }
 }

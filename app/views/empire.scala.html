@@ -4,21 +4,27 @@
 }
 
 @main("HTWG Empire", "javascripts/game_page.js") {
-    <div class="notification_bar">
-        <p class="notification_message">Error Message</p>
-    </div>
-    <section id="top">
-        <div class="container wrapper">
-            <h1>HTWG Empire</h1>
-        </div>
-    </section>
-    <div class="status container">
-        <div class="row col-md-12">
-            <p>Game Status: @controller.status</p>
-        </div>
-        <div class="playingfield row">
-            @if(controller.status == phases.SETUP) {
-                <div class="phase_idle col-md-12">
+    <script src="@routes.Assets.versioned("javascripts/vue.js")" ></script>
+    <div id="app">
+        <section id="top">
+            <div class="container wrapper">
+                <h1 class="col-md-12" id="caption">HTWG Empire</h1>
+                <div class="notification_bar col-md-12">
+                    <div class="alert alert-primary" id="alert">
+                        <span class="notification_text">Notification</span>
+                    </div>
+                    <div class="alert alert-danger" id="alert">
+                        <span class="notification_text">Notification</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="status container">
+            <div class="row col-md-12">
+                <p class="game_status">Game Status: {{ status }}</p>
+            </div>
+            <div class="playingfield row">
+                <div v-if="status === 'SETUP'" class="phase_idle col-md-12">
                     <div class="choose_playingfield">
                         <label for="playingfield">Select you playingfield</label>
                         <select class="form-control" id="field-select">
@@ -35,12 +41,10 @@
                     <button type="button" id="delete_player" class="btn btn-dark">-</button>
                     <button type="button" id="add_player" class="btn btn-dark">+</button>
                     <div class="start_game">
-                        <button type="button" id="start_game" class="btn btn-dark">Start Game</button>
+                        <button type="button" v-on:click="startGame" class="btn btn-dark">Start Game</button>
                     </div>
                 </div>
-            }
-            @if(controller.playerOnTurn != null) {
-                <div class="game_info col-md-4">
+                <div v-if="playerOnTurn !== ''" class="game_info col-md-4">
                     <table class="table table-bordered">
                         <tr>
                             <th scope="col">Current Player</th>
@@ -48,66 +52,57 @@
                             <th scope="col">Number of soldiers</th>
                         </tr>
                         <tr>
-                            <td>@controller.playerOnTurn.name</td>
-                            <td>@controller.playerOnTurn.getCountryAmount</td>
-                            <td>@controller.playerOnTurn.getNumberOfAllSoldiers</td>
+                            <td>{{ playerOnTurn }}</td>
+                            <td>{{ numberOfCountries}}</td>
+                            <td>{{ numberOfSoldiers }}</td>
                         </tr>
                     </table>
                 </div>
-                <div class="country_info col-md-4">
+                <div v-if="playerOnTurn !== ''" class="country_info col-md-4">
                     <table class="table table-hover table-bordered">
                         <tr>
                             <th scope="col">Country</th>
                             <th scope="col"># of soldiers</th>
                         </tr>
-                        @for(country <- controller.playerOnTurn.countries) {
-                            <tr>
-                                <td>@country.name</td>
-                                <td>@country.soldiers</td>
+                            <tr v-for="country of countries">
+                                <td>{{ country.name }}</td>
+                                <td>{{ country.soldiers}} </td>
                             </tr>
-                        }
                     </table>
                 </div>
-                @if(controller.status == phases.REINFORCEMENT) {
-                    <div class="move_plan col-md-4">
-                        <div class="form-group">
-                            <label for="country">Distribute soldiers to:</label>
-                            <select class="form-control" id="distribute_soldiers_cb">
-                                @for(country <- controller.playerOnTurn.countries) {
-                                    <option>@country</option>
-                                }
-                            </select>
-                        </div>
-                        <p>Soldiers to distribute: @controller.playerOnTurn.handholdSoldiers</p>
-                        <div class="dirtibute_soldiers">
-                            <input type="text" id="distribute_soldiers_input">
-                            <button type="button" id="distribute_soldiers_btn" class="btn btn-dark">Distribute Soldiers</button>
-                        </div>
-                    </div>
-
-                }
-                @if(controller.status == phases.ATTACK) {
-                    <div class="move_plan col-md-4">
-                        <label for="country">Choose country to attack from:</label>
-                        <select class="form-control" id="attack-from">
-                            @for(country <- controller.playerOnTurn.countries) {
-                                <option>@country</option>
-                            }
+                <div  v-if="status === 'REINFORCEMENT' & playerOnTurn !== ''" class="move_plan col-md-4">
+                    <div class="form-group">
+                        <label for="country">Distribute soldiers to:</label>
+                        <select  v-model="countryToDistribute" class="form-control" id="distribute_soldiers_cb">
+                            <option v-for="country of countries">{{ country.name }} </option>
                         </select>
-                        <label for="country">Choose country to attack:</label>
-                        <select class="form-control" id="attack-to">
-                        </select>
-                        <label for="soldiers_to_attack">Amount of Soldiers to attack:</label>
-                        <input type="text" id="soldiers_to_attack">
-                        <div class="attack">
-                            <button type="button" id="attack_btn" class="btn btn-dark">Attack</button>
-                        </div>
-                        <div id="complete_round">
-                            <button type="button" id="complete_round_btn" class="btn btn-dark">Complete Round</button>
-                        </div>
                     </div>
-                }
-            }
+                    <p>Handhold Soldiers: {{ handholdSoldiers }}</p>
+                    <div class="dirtibute_soldiers">
+                        <input v-model="soldiersToDistribute" id="distribute_soldiers_input">
+                        <button type="button" v-on:click="distributeSoldiers" class="btn btn-dark">Distribute Soldiers</button>
+                    </div>
+                </div>
+                <div v-if="status === 'ATTACK' & playerOnTurn !== ''" class="move_plan col-md-4">
+                    <label for="country">Choose country to attack from:</label>
+                    <select v-model="countryToAttackFrom" v-on:input="getAttackableCountries" class="form-control" id="attack-from">
+                        <option v-for="country of countries">{{ country.name }}</option>
+                    </select>
+                    <label for="country">Choose country to attack:</label>
+                    <select v-model="countryToAttack" class="form-control" id="attack-to">
+                        <option v-for="country of countriesToAttackTo">{{ country }}</option>
+                    </select>
+                    <label for="soldiers_to_attack">Amount of Soldiers to attack: (Max. {{ soldiersOnAttackCountry }})</label>
+                    <input v-model="soldiersToAttack" id="soldiers_to_attack">
+                    <div class="attack">
+                        <button type="button"  v-on:click="attackCountry" class="btn btn-dark">Attack</button>
+                    </div>
+                    <div id="complete_round">
+                        <button type="button" v-on:click="completeRound" class="btn btn-dark">Complete Round</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 }
