@@ -3,9 +3,9 @@
 @import play.api.i18n.Messages
 @import play.api.mvc.RequestHeader
 
-@()(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@(user: models.User)(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 
-@main("Empire | About") {
+@main("Empire | About", Some(user)) {
     <div class="top">
         <div class="container wrapper">
             <h1>About Empire</h1>

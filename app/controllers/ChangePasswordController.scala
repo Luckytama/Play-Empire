@@ -10,7 +10,7 @@ import forms.ChangePasswordForm
 import javax.inject.Inject
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
-import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents }
+import play.api.mvc.{ AbstractController, Action, AnyContent, ControllerComponents }
 import utils.auth.{ DefaultEnv, WithProvider }
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -45,7 +45,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+  def view: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       Ok(views.html.changePassword(ChangePasswordForm.form, request.identity))
   }
@@ -55,7 +55,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)).async {
+  def submit: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)).async {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       ChangePasswordForm.form.bindFromRequest.fold(
         form => Future.successful(BadRequest(views.html.changePassword(form, request.identity))),

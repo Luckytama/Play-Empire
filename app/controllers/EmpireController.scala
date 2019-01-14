@@ -2,6 +2,8 @@ package controllers
 
 import com.google.inject.{ Guice, Injector }
 import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.se.empire.EmpireModule
 import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.model.Grid
@@ -12,10 +14,10 @@ import javax.inject.{ Inject, Singleton }
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
 import play.api.libs.json.Json
-import play.api.mvc.{ AbstractController, AnyContent, ControllerComponents, Request }
-import utils.auth.DefaultEnv
+import play.api.mvc._
+import utils.auth.{ DefaultEnv, WithProvider }
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(
@@ -31,38 +33,42 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
 
-  def view = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Ok(views.html.empire(gameController))
+  def view: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+      Ok(views.html.empire(gameController, request.identity))
   }
 
-  def newGame = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    playingField = injector.getInstance(classOf[Grid])
-    gameController = injector.getInstance(classOf[GameController])
-    tui = TUI(gameController)
-    Redirect(routes.EmpireController.empire()).flashing("success" -> Messages("empire.started"))
+  def newGame: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+      playingField = injector.getInstance(classOf[Grid])
+      gameController = injector.getInstance(classOf[GameController])
+      tui = TUI(gameController)
+      Redirect(routes.EmpireController.empire()).flashing("success" -> Messages("empire.started"))
   }
 
-  def empire = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Redirect(routes.EmpireController.view())
+  def empire: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+      Redirect(routes.EmpireController.view())
   }
 
-  def startGame = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    val headers = request.body.asFormUrlEncoded.get
-    val playernames = headers.get("players[]")
-    val playingfieldFile = headers("playingfield").head
+  def startGame: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+      val headers = request.body.asFormUrlEncoded.get
+      val playernames = headers.get("players[]")
+      val playingfieldFile = headers("playingfield").head
 
-    gameController.setUpPhase("playingfield/" + playingfieldFile)
-    playernames.foreach(gameController.addPlayer)
-    gameController.changeToGamePhase()
-    if (gameController.status == Phase.REINFORCEMENT) {
-      Redirect(routes.EmpireController.empire()).flashing("info" -> Messages("empire.started"))
-    } else {
-      BadRequest("Error")
-    }
+      gameController.setUpPhase("playingfield/" + playingfieldFile)
+      playernames.foreach(gameController.addPlayer)
+      gameController.changeToGamePhase()
+      if (gameController.status == Phase.REINFORCEMENT) {
+        Redirect(routes.EmpireController.empire()).flashing("info" -> Messages("empire.started"))
+      } else {
+        BadRequest("Error")
+      }
   }
 
-  def distribute = Action {
-    request =>
+  def distribute: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       val headers = request.body.asFormUrlEncoded.get
       val amountOfSoldiers = headers("amountOfSoldiers").head.toInt
       val country = headers("country").head.toString
@@ -74,16 +80,16 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       }
   }
 
-  def getAttackTo = Action {
-    request =>
+  def getAttackTo: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       val headers = request.body.asFormUrlEncoded.get
       val country = headers("country").head.toString
       val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
       Ok(adjacencyList)
   }
 
-  def executeAttack = Action {
-    request =>
+  def executeAttack: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       val headers = request.body.asFormUrlEncoded.get
       val attackCountry = headers("attackCountry").head.toString
       val defendCountry = headers("defendCountry").head.toString
@@ -92,8 +98,8 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       Ok(result)
   }
 
-  def completeRound = Action {
-    request =>
+  def completeRound: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       gameController.completeRound()
       Ok("Success")
   }

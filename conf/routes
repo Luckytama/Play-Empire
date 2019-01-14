@@ -24,7 +24,7 @@ GET         /assets/*file                    controllers.Assets.versioned(file)
 
 # Map static resources from the /public folder to the /assets URL path
 
-GET         /about                           controllers.HomeController.about
+#GET         /                                controllers.HomeController.about
 
 GET         /empire                          controllers.EmpireController.empire
 GET         /empire/view                     controllers.EmpireController.view

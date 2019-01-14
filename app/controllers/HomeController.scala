@@ -1,11 +1,13 @@
 package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import javax.inject._
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import utils.auth.DefaultEnv
+import utils.auth.{DefaultEnv, WithProvider}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,8 +32,9 @@ class HomeController @Inject()(
    * a path of `/`.
    */
 
-  def about = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(views.html.index()))
+  def about: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Ok(views.html.index(request.identity))
   }
 
 }
