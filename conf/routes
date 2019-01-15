@@ -26,11 +26,10 @@ GET         /assets/*file                    controllers.Assets.versioned(file)
 
 #GET         /                                controllers.HomeController.about
 
-GET         /empire                          controllers.EmpireController.empire
+GET     /empire                     controllers.EmpireController.empire
 GET         /empire/view                     controllers.EmpireController.view
-GET         /empire/newgame                  controllers.EmpireController.newGame
-POST        /empire/startgame                controllers.EmpireController.startGame
-POST        /empire/distribute               controllers.EmpireController.distribute
-POST        /empire/getAttackTo              controllers.EmpireController.getAttackTo
-POST        /empire/attack                   controllers.EmpireController.executeAttack
-POST        /empire/complete                 controllers.EmpireController.completeRound
+GET     /empire/newgame             controllers.EmpireController.newGame
+
+GET     /ws                         controllers.EmpireController.ws
+
+POST    /empire/startgame           controllers.EmpireController.startGame
