@@ -26,9 +26,9 @@ GET         /assets/*file                    controllers.Assets.versioned(file)
 
 #GET         /                                controllers.HomeController.about
 
-GET     /empire                     controllers.EmpireController.empire
-GET         /empire/view                     controllers.EmpireController.view
-GET     /empire/newgame             controllers.EmpireController.newGame
+GET             /empire                     controllers.EmpireController.empire
+GET             /empire/view                controllers.EmpireController.view
+GET             /empire/newgame             controllers.EmpireController.newGame
 
 GET     /ws                         controllers.EmpireController.ws
 

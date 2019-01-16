@@ -234,7 +234,7 @@ format('truetype');
     width: auto;
 }
 
-#top {
+.top {
     background: rgba(14, 4, 5, 0.61) url(../images/connectwork.png) fixed;
     box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.1) inset;
     position: relative;
@@ -243,11 +243,11 @@ format('truetype');
     width: 100%;
 }
 
-#top .wrapper {
+.top .wrapper {
     padding: 10px;
 }
 
-#top .wrapper h1 {
+.top .wrapper h1 {
     font-size: 40px;
     color: #dbdbdb;
     text-shadow: 4px 4px 4px #000000;
