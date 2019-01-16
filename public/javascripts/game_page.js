@@ -227,14 +227,4 @@ $(document).ready(function () {
         }
 
     });
-
-    $("#start_newgame").click(function () {
-        $.ajax({
-            url: '/empire/newgame',
-            type: 'GET',
-            success: function() {
-                location.reload(true);
-            }
-        });
-    })
 });
