@@ -1,5 +1,7 @@
 package controllers
 
+import akka.actor.{ ActorSystem, _ }
+import akka.stream.Materializer
 import com.google.inject.{ Guice, Injector }
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -7,36 +9,30 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.se.empire.EmpireModule
 import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.model.Grid
+import de.htwg.se.empire.model.grid.Country
 import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json._
-import play.api.mvc._
-import play.api.libs.streams.ActorFlow
-import akka.actor.ActorSystem
-import akka.stream.Materializer
-import akka.actor._
-import de.htwg.se.empire.model.grid.Country
-
-import scala.swing.Reactor
 import javax.inject.{ Inject, Singleton }
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
-import play.api.libs.json.Json
+import play.api.libs.json.{ Json, _ }
+import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 import utils.auth.{ DefaultEnv, WithProvider }
 
 import scala.concurrent.ExecutionContext
+import scala.swing.Reactor
 
 @Singleton
 class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(
   implicit
   webJarsUtil: WebJarsUtil,
   assets: AssetsFinder,
-  ex: ExecutionContext
+  ex: ExecutionContext,
+  system: ActorSystem,
+  materializer: Materializer
 ) extends AbstractController(cc) with I18nSupport {
-class EmpireController @Inject()(cc: ControllerComponents)( implicit system: ActorSystem, materializer: Materializer) extends AbstractController(cc) {
 
   var injector: Injector = Guice.createInjector(new EmpireModule)
   var parser: Parser = injector.getInstance(classOf[Parser])
@@ -90,24 +86,18 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
     }
   }
 
-  def getAttackableCountries(country:String):String = {
+  def getAttackableCountries(country: String): String = {
     val attackableCountries = Json.obj("attackableCountries" -> gameController.getAttackableCountries(country))
     attackableCountries.toString
   }
 
-  def completeRound:String = {
-    gameController.completeRound()
-    val message = Json.obj("success" -> "success")
-    message.toString
-  }
-
-  def executeAttack(attackCountry:String, defendCountry:String, soldiers:Int):String = {
+  def executeAttack(attackCountry: String, defendCountry: String, soldiers: Int): String = {
     val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
     val attackMessage = Json.obj("attackMessage" -> result)
     attackMessage.toString
   }
 
-  def distributeSoldiers(soldiers:Int, country:String):String  = {
+  def distributeSoldiers(soldiers: Int, country: String): String = {
     println(gameController.status)
     val distributedSoldiers: Int = gameController.distributeSoldiers(soldiers, country)
     if (distributedSoldiers > 0) {
@@ -125,17 +115,17 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
 
   }
 
-  def getHandholdSoldiers:String = {
+  def getHandholdSoldiers: String = {
     val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.playerOnTurn.handholdSoldiers)
     handholdSoldiers.toString
   }
 
-  def getCountries:String = {
+  def getCountries: String = {
     val countries = Json.obj("countries" -> gameController.playerOnTurn.countries)
     countries.toString
   }
 
-  def getPlayerInfo:String = {
+  def getPlayerInfo: String = {
     val playerOnTurn = Json.obj("playerInfo" -> Json.obj(
       "playerOnTurn" -> JsString(gameController.playerOnTurn.name),
       "numberOfCountries" -> JsNumber(gameController.playerOnTurn.getCountryAmount),
@@ -144,10 +134,11 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
     playerOnTurn.toString
   }
 
-  def getStatus:String = {
+  def getStatus: String = {
     val status = Json.obj("status" -> gameController.status.toString)
     status.toString
   }
+
   def view: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       Ok(views.html.empire(gameController, request.identity))
@@ -213,9 +204,9 @@ class EmpireController @Inject()(cc: ControllerComponents)( implicit system: Act
       Redirect(routes.EmpireController.view()).flashing("info" -> result)
   }
 
-  def completeRound: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      gameController.completeRound()
-      Ok("Success")
+  def completeRound: String = {
+    gameController.completeRound()
+    val message = Json.obj("success" -> "success")
+    message.toString
   }
 }

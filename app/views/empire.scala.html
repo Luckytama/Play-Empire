@@ -8,8 +8,8 @@
     de.htwg.se.empire.util.Phase
 }
 
-@main("HTWG Empire", "javascripts/game_page.js") {
-    <script src="@routes.Assets.versioned("javascripts/vue.js")" ></script>
+@main("HTWG Empire", Some(user)) {
+    <script src="@assets.path("javascripts/vue.js")" ></script>
     <div id="app">
         <section id="top">
             <div class="container wrapper">
