@@ -26,7 +26,6 @@ $(document).ready(function () {
     let player_form_index = 1;
     let playingField = "";
 
-
     let app = new Vue({
         el: '#app',
         data: {
@@ -53,17 +52,17 @@ $(document).ready(function () {
             getPlayerInfo: function () {
                 let data = {};
                 data.function = "getPlayerInfo";
-                ws.send(JSON.stringify(data))
+                ws.send(JSON.stringify(data));
             },
             getCountries: function () {
                 let data = {};
                 data.function = "getCountries";
-                ws.send(JSON.stringify(data))
+                ws.send(JSON.stringify(data));
             },
             getHandholdSoldiers: function () {
                 let data = {};
                 data.function = "getHandholdSoldiers";
-                ws.send(JSON.stringify(data))
+                ws.send(JSON.stringify(data));
             },
             getAttackableCountries: function () {
                 let data = {};
@@ -108,7 +107,6 @@ $(document).ready(function () {
                         "players": players,
                         "playingfield": playingField
                     };
-                    console.log(starter);
                     $.ajax({
                         url: '/empire/startgame',
                         type: 'POST',
@@ -132,6 +130,7 @@ $(document).ready(function () {
                     data.countryToDistribute = app.countryToDistribute;
                     ws.send(JSON.stringify(data));
                     app.updateGame();
+                    //app.soldiersToDistribute = "";
                 } else if (app.soldiersToDistribute > app.handholdSoldiers) {
                     showNotification(true, "You don't have that many soldiers to distribute.")
                 } else {
@@ -145,8 +144,12 @@ $(document).ready(function () {
                     data.attackCountry = app.countryToAttackFrom;
                     data.defendCountry = app.countryToAttack;
                     data.amountSoldiers = app.soldiersToAttack;
-                    ws.send(JSON.stringify(data));
+                    sendToWs(ws, JSON.stringify(data));
                     app.updateGame();
+                    app.countryToAttackFrom = "";
+                    app.countryToAttack = "";
+                    app.soldiersOnAttackCountry = "";
+                    app.soldiersToAttack = ""
                 } else {
                     showNotification(true, "Attack not possible!");
                 }
@@ -168,6 +171,17 @@ $(document).ready(function () {
         }
     });
 
+    let timerId = 0;
+    function keepAlive() {
+        let timeout = 20000;
+        let data = {};
+        data.function = "keepAlive";
+        if (ws.readyState === ws.OPEN) {
+            ws.send(JSON.stringify(data));
+        }
+        timerId = setTimeout(keepAlive, timeout);
+    }
+
     function isOpen(ws) { return ws.readyState === ws.OPEN }
 
     function connectWebSocket(ws) {
@@ -176,7 +190,6 @@ $(document).ready(function () {
             if (typeof e.data === "string") {
                 let message = JSON.parse(e.data);
                 if (message.hasOwnProperty("attackableCountries")) {
-                    console.log(message.attackableCountries);
                     app.countriesToAttackTo = message.attackableCountries;
                 } else if (message.hasOwnProperty("status")) {
                     app.status = message.status;
@@ -202,6 +215,7 @@ $(document).ready(function () {
 
         ws.onopen = function() {
             console.log("Connected to Websocket");
+            keepAlive();
         };
 
         ws.onclose = function () {

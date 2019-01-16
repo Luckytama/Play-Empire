@@ -82,6 +82,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
             out ! executeAttack(attackCountry, defendCountry, amountSoldiers.toInt)
           }
           case "completeRound" => out ! completeRound
+          case "keepAlive" => out ! Json.obj("pong" -> "pong").toString
         }
     }
   }
