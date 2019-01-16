@@ -1,7 +1,22 @@
-$(document).ready(function () {
+function showNotification(isError, message) {
+    let success = $(".alert-primary");
+    let danger = $(".alert-danger");
+    $(".notification_text").text(message);
+    if (isError) {
+        danger.show();
+        setTimeout(function () {
+            danger.hide();
+        }, 3000)
+    } else {
+        success.show();
+        setTimeout(function () {
+            success.hide();
+        }, 3000)
+    }
+}
 
-    //On reload functions
-    window.onload = loadAdjacentCountries();
+
+$(document).ready(function () {
 
     let players = [];
     let player_form_index = 0;
