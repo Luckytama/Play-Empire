@@ -153,9 +153,21 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     Redirect("/empire")
   }
 
+  def newMapGame = Action {
+    playingField = injector.getInstance(classOf[Grid])
+    gameController = injector.getInstance(classOf[GameController])
+    tui = TUI(gameController)
+    Redirect("/empire/map")
+  }
+
   def empire: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       Ok(views.html.empire(gameController, request.identity))
+  }
+
+  def map: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
+    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+      Ok(views.html.map(gameController, request.identity))
   }
 
   def startGame = Action { request =>

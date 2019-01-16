@@ -287,26 +287,8 @@ format('truetype');
     border-spacing: 5px;
 }
 
-.phase_idle {
-
+svg #layer4 path:hover{
+    cursor: pointer;
+    fill: #00ACED;
 }
 
-.btn_start_game {
-
-}
-
-.choose_playingfield {
-
-}
-
-.country_info {
-
-}
-
-.game_info {
-
-}
-
-.move_plan {
-
-}
