@@ -92,6 +92,12 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     attackableCountries.toString
   }
 
+  def completeRound: String = {
+    gameController.completeRound()
+    val message = Json.obj("success" -> "success")
+    message.toString
+  }
+
   def executeAttack(attackCountry: String, defendCountry: String, soldiers: Int): String = {
     val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
     val attackMessage = Json.obj("attackMessage" -> result)
@@ -140,74 +146,30 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     status.toString
   }
 
-  def view: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      Ok(views.html.empire(gameController, request.identity))
-  }
-
-  def newGame: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      playingField = injector.getInstance(classOf[Grid])
-      gameController = injector.getInstance(classOf[GameController])
-      tui = TUI(gameController)
-      Redirect(routes.EmpireController.view()).flashing("success" -> Messages("game.started"))
+  def newGame = Action {
+    playingField = injector.getInstance(classOf[Grid])
+    gameController = injector.getInstance(classOf[GameController])
+    tui = TUI(gameController)
+    Redirect("/empire")
   }
 
   def empire: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      Redirect(routes.EmpireController.view())
+      Ok(views.html.empire(gameController, request.identity))
   }
 
-  def startGame: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      val headers = request.body.asFormUrlEncoded.get
-      val playernames = headers.get("players[]")
-      val playingfieldFile = headers("playingfield").head
+  def startGame = Action { request =>
+    val headers = request.body.asFormUrlEncoded.get
+    val playernames = headers.get("players[]")
+    val playingfieldFile = headers("playingfield").head
 
-      gameController.setUpPhase("playingfield/" + playingfieldFile)
-      playernames.foreach(gameController.addPlayer)
-      gameController.changeToGamePhase()
-      if (gameController.status == Phase.REINFORCEMENT) {
-        Redirect(routes.EmpireController.view()).flashing("info" -> Messages("game.started"))
-      } else {
-        Redirect(routes.EmpireController.view()).flashing("error" -> Messages("game.started.error"))
-      }
-  }
-
-  def distribute: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      val headers = request.body.asFormUrlEncoded.get
-      val amountOfSoldiers = headers("amountOfSoldiers").head.toInt
-      val country = headers("country").head.toString
-      val distributedSoldiers: Int = gameController.distributeSoldiers(amountOfSoldiers, country)
-      if (distributedSoldiers > 0) {
-        Ok("Success")
-      } else {
-        BadRequest("Error")
-      }
-  }
-
-  def getAttackTo: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      val headers = request.body.asFormUrlEncoded.get
-      val country = headers("country").head.toString
-      val adjacencyList = Json.obj("adjacentCountries" -> gameController.getAttackableCountries(country))
-      Ok(adjacencyList)
-  }
-
-  def executeAttack: Action[AnyContent] = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
-    implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      val headers = request.body.asFormUrlEncoded.get
-      val attackCountry = headers("attackCountry").head.toString
-      val defendCountry = headers("defendCountry").head.toString
-      val soldiers = headers("soldiers").head.toInt
-      val result = gameController.attackCountry(attackCountry, defendCountry, soldiers)
-      Redirect(routes.EmpireController.view()).flashing("info" -> result)
-  }
-
-  def completeRound: String = {
-    gameController.completeRound()
-    val message = Json.obj("success" -> "success")
-    message.toString
+    gameController.setUpPhase("playingfield/" + playingfieldFile)
+    playernames.foreach(gameController.addPlayer)
+    gameController.changeToGamePhase()
+    if (gameController.status == Phase.REINFORCEMENT) {
+      Ok("Success!")
+    } else {
+      BadRequest("something went wrong")
+    }
   }
 }
