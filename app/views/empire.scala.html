@@ -12,13 +12,13 @@
     <script src="@assets.path("javascripts/vue.js")" ></script>
     <div id="app">
         <section id="top">
-            <div class="container wrapper">
+            <div class="wrapper">
                 <h1 class="col-md-12" id="caption">HTWG Empire</h1>
                 <div class="notification_bar col-md-12">
-                    <div class="alert alert-primary" id="alert">
+                    <div class="alert alert-info notification" id="alert">
                         <span class="notification_text">Notification</span>
                     </div>
-                    <div class="alert alert-danger" id="alert">
+                    <div class="alert alert-danger notification" id="alert">
                         <span class="notification_text">Notification</span>
                     </div>
                 </div>
@@ -37,10 +37,11 @@
                             <option value="PresentationData.json">Small Presentation Board</option>
                         </select>
                     </div>
-                    <div class="form_add_player" id="add_player_form">
-                        <form>
+                    <div class="form_add_player">
+                        <form id="player_form">
                             Play with:<br>
-                            <input type="text" id="player_name" name="playername"><br>
+                            <input type="text" id="player_name" name="playername">
+                            <input type="text" id="player_name1" name="playername">
                         </form>
                     </div>
                     <button type="button" id="delete_player" class="btn btn-dark">-</button>

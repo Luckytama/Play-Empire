@@ -1,5 +1,5 @@
 function showNotification(isError, message) {
-    let success = $(".alert-primary");
+    let success = $(".alert-info");
     let danger = $(".alert-danger");
     $(".notification_text").text(message);
     if (isError) {
@@ -18,8 +18,12 @@ function showNotification(isError, message) {
 
 $(document).ready(function () {
 
+    let ws = new WebSocket("ws://localhost:9000/ws");
+    //On reload functions
+    window.onload = connectWebSocket(ws);
+
     let players = [];
-    let player_form_index = 0;
+    let player_form_index = 1;
     let playingField = "";
 
 
@@ -93,7 +97,7 @@ $(document).ready(function () {
                 app.updateGame();
             },
             startGame: function () {
-                $("#add_player_form input[type=text]").each(function () {
+                $("#player_form input[type=text]").each(function () {
                     if (this.value !== "") {
                         players.push(this.value);
                     }
@@ -104,6 +108,7 @@ $(document).ready(function () {
                         "players": players,
                         "playingfield": playingField
                     };
+                    console.log(starter);
                     $.ajax({
                         url: '/empire/startgame',
                         type: 'POST',
@@ -147,6 +152,20 @@ $(document).ready(function () {
                 }
             }
         },
+    });
+
+    var csrf_token = $('input[name="csrfToken"]').val();
+    $.ajaxPrefilter(function (options) {
+        if (options.type.toLowerCase() === "post") {
+            // initialize `data` to empty string if it does not exist
+            options.data = options.data || "";
+
+            // add leading ampersand if `data` is non-empty
+            options.data += options.data ? "&" : "";
+
+            // add _token entry
+            options.data += "csrfToken=" + encodeURIComponent(csrf_token);
+        }
     });
 
     function isOpen(ws) { return ws.readyState === ws.OPEN }
@@ -194,13 +213,18 @@ $(document).ready(function () {
         };
     }
 
+
     $("#add_player").click(function () {
         player_form_index++;
-        $("#player_name").clone().appendTo("#add_player_form").attr("id", "player_name" + player_form_index).val(null);
+        let el = "<input type='text' id='player_name" + player_form_index + "' name='playername'>";
+        $("#player_form").append(el);
     });
 
     $("#delete_player").click(function () {
-        $("#player_name" + player_form_index).remove();
-        player_form_index--;
+        if (player_form_index > 1) {
+            $("#player_name" + player_form_index).remove();
+            player_form_index--;
+        }
+
     });
 });

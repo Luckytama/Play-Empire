@@ -198,6 +198,7 @@ meter::-webkit-meter-optimum-value {
 table, th, td, caption {
     border-collapse: collapse;
     border-spacing: 5px;
+    border-color: #1d2124;
     padding: 5px;
     text-align: left;
     margin: auto;
@@ -229,39 +230,46 @@ format('truetype');
 format('truetype');
 }
 
-.alert {
-    margin-bottom: 0;
-}
-
 #field-select {
     width: auto;
 }
 
-.start_game {
-    padding-top: 10px;
-}
-
-.top {
+#top {
     background: rgba(14, 4, 5, 0.61) url(../images/connectwork.png) fixed;
     box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.1) inset;
-    padding: auto;
+    position: relative;
+    text-align: center;
+    height: 130pt;
+    width: 100%;
 }
 
-.top .wrapper {
-    padding: 15px;
+#top .wrapper {
+    padding: 10px;
 }
 
-.top .wrapper h1 {
+#top .wrapper h1 {
     font-size: 40px;
     color: #dbdbdb;
     text-shadow: 4px 4px 4px #000000;
-    margin: auto;
+    margin-top: 1em;
 }
 
-h1 {
-    margin-top: 1em !important;
-    margin-bottom: 2em !important;
-    text-align: center;
+.btn {
+    margin: 5px;
+}
+
+.notification_bar {
+    position: relative;
+}
+
+.notification {
+    display: none;
+    z-index: 2;
+}
+
+.log-alert {
+    z-index: 2;
+    position: absolute;
 }
 
 .status {
@@ -272,6 +280,11 @@ h1 {
 .playingfield {
     padding: 5px;
     margin: auto;
+}
+
+.game_status {
+    padding: 5px;
+    border-spacing: 5px;
 }
 
 .phase_idle {
