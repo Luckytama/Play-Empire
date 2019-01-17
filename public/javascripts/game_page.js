@@ -20,7 +20,9 @@ $(document).ready(function () {
 
     let ws = new WebSocket("ws://localhost:9000/ws");
     //On reload functions
-    window.onload = connectWebSocket(ws);
+    window.onload = function () {
+        connectWebSocket(ws);
+    }
 
     let players = [];
     let player_form_index = 1;
@@ -31,6 +33,8 @@ $(document).ready(function () {
         data: {
             status: "SETUP",
             playerOnTurn: "",
+            firstPlayer: "",
+            secondPlayer: "",
             numberOfCountries: 0,
             numberOfSoldiers: 0,
             countries: [],
@@ -103,6 +107,8 @@ $(document).ready(function () {
                 });
                 playingField = $("#field-select").val();
                 if (players.length >= 2) {
+                    app.firstPlayer = players[0];
+                    app.secondPlayer = players[1];
                     let starter = {
                         "players": players,
                         "playingfield": playingField
@@ -112,7 +118,9 @@ $(document).ready(function () {
                         type: 'POST',
                         data: starter,
                         success: function () {
-                            app.updateGame()
+                            app.updateGame();
+                            console.log('coloring');
+                            app.colorCountries();
                         },
                         error: function () {
                             showNotification(true, "Game can't be started.")
@@ -144,7 +152,7 @@ $(document).ready(function () {
                     data.attackCountry = app.countryToAttackFrom;
                     data.defendCountry = app.countryToAttack;
                     data.amountSoldiers = app.soldiersToAttack;
-                    sendToWs(ws, JSON.stringify(data));
+                    ws.send(JSON.stringify(data));
                     app.updateGame();
                     app.countryToAttackFrom = "";
                     app.countryToAttack = "";
@@ -153,8 +161,38 @@ $(document).ready(function () {
                 } else {
                     showNotification(true, "Attack not possible!");
                 }
-            }
+            },
+            clickCountry: function () {
+                $("#layer4 path").on("click", function(e) {
+                    if ($(this).hasClass("player_" + app.playerOnTurn)) {
+                        $(".active").removeClass("active");
+                        $(this).addClass("active");
+                        if (app.status === "REINFORCEMENT") {
+                            app.countryToDistribute = $(this).attr("id")
+                        }
+                    }
+                });
+            },
+            colorCountries: function () {
+                $("#layer4 path").each(function (e) {
+                    $(this).removeClass("player_" + app.firstPlayer);
+                    $(this).removeClass("player_" + app.secondPlayer);
+                });
+                for (let c of app.countries) {
+                    $("#" + c.name.toLowerCase().replace(" ", "_")).addClass("player_" + app.firstPlayer);
+                }
+                $("#layer4 path").each(function (e) {
+                    if(!$(this).hasClass("player_" + app.firstPlayer)) {
+                        $(this).addClass("player_" + app.secondPlayer);
+                    }
+                })
+            },
         },
+        watch: {
+            'countries': function () {
+                this.colorCountries()
+            }
+        }
     });
 
     var csrf_token = $('input[name="csrfToken"]').val();
