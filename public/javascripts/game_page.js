@@ -6,12 +6,12 @@ function showNotification(isError, message) {
         danger.show();
         setTimeout(function () {
             danger.hide();
-        }, 3000)
+        }, 5000)
     } else {
         success.show();
         setTimeout(function () {
             success.hide();
-        }, 3000)
+        }, 5000)
     }
 }
 
@@ -20,9 +20,8 @@ $(document).ready(function () {
 
     let ws = new WebSocket("ws://localhost:9000/ws");
     //On reload functions
-    window.onload = function () {
-        connectWebSocket(ws);
-    }
+    window.onload = connectWebSocket(ws);
+
 
     let players = [];
     let player_form_index = 1;
@@ -41,7 +40,7 @@ $(document).ready(function () {
             handholdSoldiers: 0,
             soldiersToDistribute: "",
             countryToDistribute: "",
-            countryToAttackFrom: {},
+            countryToAttackFrom: "",
             countryToAttack: "",
             countriesToAttackTo: [],
             soldiersOnAttackCountry: "",
@@ -51,33 +50,40 @@ $(document).ready(function () {
             getStatus: function () {
                 let data = {};
                 data.function = "getStatus";
+                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getPlayerInfo: function () {
                 let data = {};
                 data.function = "getPlayerInfo";
+                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getCountries: function () {
                 let data = {};
                 data.function = "getCountries";
+                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getHandholdSoldiers: function () {
                 let data = {};
                 data.function = "getHandholdSoldiers";
+                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getAttackableCountries: function () {
-                let data = {};
-                data.function = "getAttackableCountries";
-                data.country = $("#attack-from").val();
-                app.getAttackableSoldiers();
-                ws.send(JSON.stringify(data));
+                if (app.countryToAttackFrom !== '' & app.countryToAttackFrom !== undefined) {
+                    let data = {};
+                    data.function = "getAttackableCountries";
+                    data.country = app.countryToAttackFrom;
+                    app.getAttackableSoldiers();
+                    console.log(JSON.stringify(data));
+                    ws.send(JSON.stringify(data));
+                }
             },
             getAttackableSoldiers: function () {
                 for (let c of app.countries) {
-                    if (c.name === $("#attack-from").val()) {
+                    if (c.name === app.countryToAttackFrom) {
                         app.soldiersOnAttackCountry = c.soldiers - 1;
                     }
                 }
@@ -87,15 +93,16 @@ $(document).ready(function () {
                 app.getPlayerInfo();
                 app.getCountries();
                 app.getHandholdSoldiers();
-                if (app.status === "ATTACK") {
-                    app.getAttackableCountries();
-                    app.getAttackableSoldiers();
-                }
+                // if (app.status === "ATTACK") {
+                //     app.getAttackableCountries();
+                //     app.getAttackableSoldiers();
+                // }
 
             },
             completeRound: function () {
                 let data = {};
                 data.function = "completeRound";
+                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
                 app.updateGame();
             },
@@ -119,7 +126,6 @@ $(document).ready(function () {
                         data: starter,
                         success: function () {
                             app.updateGame();
-                            console.log('coloring');
                             app.colorCountries();
                         },
                         error: function () {
@@ -136,6 +142,7 @@ $(document).ready(function () {
                     data.function = "distributeSoldiers";
                     data.soldiersToDistribute = app.soldiersToDistribute;
                     data.countryToDistribute = app.countryToDistribute;
+                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
                     //app.soldiersToDistribute = "";
@@ -152,8 +159,10 @@ $(document).ready(function () {
                     data.attackCountry = app.countryToAttackFrom;
                     data.defendCountry = app.countryToAttack;
                     data.amountSoldiers = app.soldiersToAttack;
+                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
+                    app.colorCountries();
                     app.countryToAttackFrom = "";
                     app.countryToAttack = "";
                     app.soldiersOnAttackCountry = "";
@@ -163,34 +172,89 @@ $(document).ready(function () {
                 }
             },
             clickCountry: function () {
-                $("#layer4 path").on("click", function(e) {
-                    if ($(this).hasClass("player_" + app.playerOnTurn)) {
-                        $(".active").removeClass("active");
-                        $(this).addClass("active");
-                        if (app.status === "REINFORCEMENT") {
-                            app.countryToDistribute = $(this).attr("id")
+                    $("#layer4 path").on("click", function(e) {
+                        if (app.playerOnTurn === app.firstPlayer) {
+                            if ($(this).hasClass("player_1")) {
+                                $(".active").removeClass("active");
+                                $(this).addClass("active");
+                                if (app.status === "REINFORCEMENT") {
+                                    app.countryToDistribute = $(this).attr("id")
+                                } else if (app.status === "ATTACK") {
+                                    app.countryToAttackFrom = $(this).attr("id")
+
+                                }
+                            }
+                        } else {
+                            if ($(this).hasClass("player_2")) {
+                                $(".active").removeClass("active");
+                                $(this).addClass("active");
+                                if (app.status === "REINFORCEMENT") {
+                                    app.countryToDistribute = $(this).attr("id")
+                                } else if (app.status === "ATTACK") {
+                                    app.countryToAttackFrom = $(this).attr("id")
+
+                                }
+                            }
                         }
-                    }
-                });
+                        if ($(this).hasClass("attackable")) {
+                            $(".attackable_selected").removeClass("attackable_selected");
+                            $(this).addClass("attackable_selected");
+                            app.countryToAttack = $(this).attr("id");
+                        }
+                    });
+
             },
             colorCountries: function () {
-                $("#layer4 path").each(function (e) {
-                    $(this).removeClass("player_" + app.firstPlayer);
-                    $(this).removeClass("player_" + app.secondPlayer);
-                });
-                for (let c of app.countries) {
-                    $("#" + c.name.toLowerCase().replace(" ", "_")).addClass("player_" + app.firstPlayer);
-                }
-                $("#layer4 path").each(function (e) {
-                    if(!$(this).hasClass("player_" + app.firstPlayer)) {
-                        $(this).addClass("player_" + app.secondPlayer);
+                app.cleanColors();
+                if (app.playerOnTurn === app.firstPlayer) {
+                    for (let c of app.countries) {
+                        $("#" + c.name).addClass("player_1");
                     }
-                })
+                    $("#layer4 path").each(function (e) {
+                        if(!$(this).hasClass("player_1")) {
+                            $(this).addClass("player_2");
+                        }
+                    })
+                } else {
+                    for (let c of app.countries) {
+                        $("#" + c.name).addClass("player_2");
+                    }
+                    $("#layer4 path").each(function (e) {
+                        if(!$(this).hasClass("player_2")) {
+                            $(this).addClass("player_1");
+                        }
+                    })
+                }
+
             },
+            colorAttackable: function () {
+                $(".attackable_selected").removeClass("attackable_selected");
+                $("#layer4 path").each(function (e) {
+                    $(this).removeClass("attackable");
+                });
+                for (let c of app.countriesToAttackTo) {
+                    $("#" + c).addClass("attackable");
+                }
+            },
+            cleanColors: function () {
+                $("#layer4 path").each(function (e) {
+                    $(this).removeClass("player_1");
+                    $(this).removeClass("player_2");
+                    $(this).removeClass("active");
+                    $(this).removeClass("attackable");
+                    $(this).removeClass("attackable_selected");
+                });
+            }
         },
         watch: {
             'countries': function () {
                 this.colorCountries()
+            },
+            'countryToAttackFrom': function () {
+                this.getAttackableCountries();
+            },
+            'countriesToAttackTo': function () {
+                this.colorAttackable();
             }
         }
     });
@@ -214,10 +278,16 @@ $(document).ready(function () {
         let timeout = 20000;
         let data = {};
         data.function = "keepAlive";
-        if (ws.readyState === ws.OPEN) {
+        if (ws.readyState == ws.OPEN) {
             ws.send(JSON.stringify(data));
         }
         timerId = setTimeout(keepAlive, timeout);
+    }
+
+    function cancelKeepAlive() {
+        if (timerId) {
+            clearTimeout(timerId);
+        }
     }
 
     function isOpen(ws) { return ws.readyState === ws.OPEN }
@@ -258,6 +328,7 @@ $(document).ready(function () {
 
         ws.onclose = function () {
             console.log('Connection with Websocket Closed!');
+            cancelKeepAlive();
         };
 
         ws.onerror = function (error) {

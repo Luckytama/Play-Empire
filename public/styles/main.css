@@ -299,16 +299,30 @@ format('truetype');
 
 .active {
     transform: scale(1.015) !important;
+    fill: #00ff00 !important;
+}
+
+.attackable {
     fill: #ff00ff!important;
 }
 
-.player_a {
+.attackable_selected {
+    transform: scale(1.015) !important;
+}
+
+.player_1 {
     fill: #ff0000
 }
 
-.player_b {
+.player_2 {
     fill: #0000ff
 }
 
-
+. player_box {
+    float: left;
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    border: 1px solid rgba(0, 0, 0, .2);
+}
 
