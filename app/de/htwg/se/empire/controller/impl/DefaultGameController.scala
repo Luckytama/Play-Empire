@@ -116,7 +116,12 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
   override def getCurrentPhase: Phase = status
 
   override def getAttackableCountries(country: String): List[String] = {
-    playingField.getCountry(country).get.adjacentCountries.filter(!playerOnTurn.containsCountry(_))
+    if (country != "") {
+      playingField.getCountry(country).get.adjacentCountries.filter(!playerOnTurn.containsCountry(_))
+    } else {
+      var dm = List[String]()
+      dm
+    }
   }
 
   private def getNextPlayer: Player = {
