@@ -293,7 +293,7 @@ format('truetype');
     transition: all 0.25s ease-out
 }
 
-#layer4 path:hover{
+#layer4 path:hover {
     cursor: pointer;
 }
 
@@ -318,11 +318,6 @@ format('truetype');
     fill: #0000ff
 }
 
-. player_box {
-    float: left;
-    width: 20px;
-    height: 20px;
-    margin: 5px;
-    border: 1px solid rgba(0, 0, 0, .2);
+.popover-title {
+    font-family: Cincel-Bold, serif;
 }
-

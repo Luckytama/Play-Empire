@@ -22,7 +22,6 @@ $(document).ready(function () {
     //On reload functions
     window.onload = connectWebSocket(ws);
 
-
     let players = [];
     let player_form_index = 1;
     let playingField = "";
@@ -171,37 +170,44 @@ $(document).ready(function () {
                     showNotification(true, "Attack not possible!");
                 }
             },
+            hoverCountry: function () {
+                $("#layer4 path").animate(function () {
+                    $(this).popover();
+                }, function () {
+                    $(this).popover();
+                })
+            },
             clickCountry: function () {
-                    $("#layer4 path").on("click", function(e) {
-                        if (app.playerOnTurn === app.firstPlayer) {
-                            if ($(this).hasClass("player_1")) {
-                                $(".active").removeClass("active");
-                                $(this).addClass("active");
-                                if (app.status === "REINFORCEMENT") {
-                                    app.countryToDistribute = $(this).attr("id")
-                                } else if (app.status === "ATTACK") {
-                                    app.countryToAttackFrom = $(this).attr("id")
+                $("#layer4 path").on("click", function(e) {
+                    if (app.playerOnTurn === app.firstPlayer) {
+                        if ($(this).hasClass("player_1")) {
+                            $(".active").removeClass("active");
+                            $(this).addClass("active");
+                            if (app.status === "REINFORCEMENT") {
+                                app.countryToDistribute = $(this).attr("id")
+                            } else if (app.status === "ATTACK") {
+                                app.countryToAttackFrom = $(this).attr("id")
 
-                                }
-                            }
-                        } else {
-                            if ($(this).hasClass("player_2")) {
-                                $(".active").removeClass("active");
-                                $(this).addClass("active");
-                                if (app.status === "REINFORCEMENT") {
-                                    app.countryToDistribute = $(this).attr("id")
-                                } else if (app.status === "ATTACK") {
-                                    app.countryToAttackFrom = $(this).attr("id")
-
-                                }
                             }
                         }
-                        if ($(this).hasClass("attackable")) {
-                            $(".attackable_selected").removeClass("attackable_selected");
-                            $(this).addClass("attackable_selected");
-                            app.countryToAttack = $(this).attr("id");
+                    } else {
+                        if ($(this).hasClass("player_2")) {
+                            $(".active").removeClass("active");
+                            $(this).addClass("active");
+                            if (app.status === "REINFORCEMENT") {
+                                app.countryToDistribute = $(this).attr("id")
+                            } else if (app.status === "ATTACK") {
+                                app.countryToAttackFrom = $(this).attr("id")
+
+                            }
                         }
-                    });
+                    }
+                    if ($(this).hasClass("attackable")) {
+                        $(".attackable_selected").removeClass("attackable_selected");
+                        $(this).addClass("attackable_selected");
+                        app.countryToAttack = $(this).attr("id");
+                    }
+                });
 
             },
             colorCountries: function () {
@@ -209,6 +215,7 @@ $(document).ready(function () {
                 if (app.playerOnTurn === app.firstPlayer) {
                     for (let c of app.countries) {
                         $("#" + c.name).addClass("player_1");
+                        $("#" + c.name).attr("data-content","Soldiers: " + c.soldiers);
                     }
                     $("#layer4 path").each(function (e) {
                         if(!$(this).hasClass("player_1")) {
@@ -218,6 +225,7 @@ $(document).ready(function () {
                 } else {
                     for (let c of app.countries) {
                         $("#" + c.name).addClass("player_2");
+                        $("#" + c.name).attr("data-content","Soldiers: " + c.soldiers);
                     }
                     $("#layer4 path").each(function (e) {
                         if(!$(this).hasClass("player_2")) {
