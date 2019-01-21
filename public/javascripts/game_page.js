@@ -18,7 +18,7 @@ function showNotification(isError, message) {
 
 $(document).ready(function () {
 
-    let ws = new WebSocket("ws://localhost:9000/ws");
+    let ws = new WebSocket("http://htwg-wt-empire.herokuapp.com/ws");
     //On reload functions
     window.onload = connectWebSocket(ws);
 
