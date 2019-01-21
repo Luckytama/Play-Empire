@@ -15,9 +15,7 @@
         </div>
     </div>
     <div class="status container">
-        <div class="row col-md-12">
-            <p>Game Status: @controller.status</p>
-        </div>
+            <empire-gamestatus status="@controller.status"></empire-gamestatus>
         <div class="playingfield row">
             @if(controller.status == phases.SETUP) {
                 <div class="phase_idle col-md-12">
