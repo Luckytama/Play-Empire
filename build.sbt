@@ -79,7 +79,6 @@ libraryDependencies += guice
 libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.3"
 //unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 libraryDependencies += "junit" % "junit" % "4.8" % "test"
 libraryDependencies ++= Seq(
   "org.apache.logging.log4j" %% "log4j-api-scala" % "11.0",
@@ -90,6 +89,8 @@ libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.5.0.RC1"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"
 libraryDependencies += "com.google.inject" % "guice" % "4.1.0"
 libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.3"
+libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
 fork in run := true
 
