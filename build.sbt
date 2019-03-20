@@ -68,11 +68,11 @@ ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(DanglingCloseParenthesis, Preserve)
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
-      
+
 resolvers += "Akka Snapshot Repository" at "http://repo.akka.io/snapshots/"
 
 //resolvers += Resolver.sonatypeRepo("snapshots")
-      
+
 scalaVersion := "2.12.7"
 
 libraryDependencies += guice
@@ -91,6 +91,9 @@ libraryDependencies += "com.google.inject" % "guice" % "4.1.0"
 libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.3"
 libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test
+
+coverageExcludedPackages := "\\target" +
+  "\\de\\htwg\\se\\empire\\view"
 
 fork in run := true
 
