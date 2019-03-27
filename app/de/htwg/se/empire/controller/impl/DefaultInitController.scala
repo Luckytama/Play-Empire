@@ -21,7 +21,7 @@ class DefaultInitController extends InitController {
 
   val INIT_VALUE_SOLDIERS_PER_COUNTRY = 1
 
-  def setUpGrid(pathToGrid: String, players: String*): Option[Grid] = {
+  def loadGridFromFile(pathToGrid: String, players: String*): Option[Grid] = {
     val parser = new JsonParser
     try {
       val playingField = parser.parseFileToPlayingField(pathToGrid)
@@ -74,7 +74,7 @@ class DefaultInitController extends InitController {
       case 2 =>
         distribute(playingField, INIT_SOLDIERS_2PLAYER)
       case _ =>
-        LOG.info("There are not a valid number of players")
+        LOG.error("There are not a valid number of players")
     }
   }
 
@@ -84,7 +84,7 @@ class DefaultInitController extends InitController {
 
   private def distributeSoldierToRandCountry(player: Player, soldiers: Int): Unit = {
     if (player.countries.isEmpty) {
-      LOG.info("There are no countries set for player ", player.name)
+      LOG.error("There are no countries set for player ", player.name)
       None
     } else if (soldiers != 0) {
       player.countries(Random.nextInt(player.countries.length)).addSoldiers(1)

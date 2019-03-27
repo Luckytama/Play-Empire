@@ -25,7 +25,7 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
 
   override def setUpPhase(pathToGrid: String, players: String*): Unit = {
     status = SETUP
-    val playingFieldOpt = initController.setUpGrid(pathToGrid, players: _*)
+    val playingFieldOpt = initController.loadGridFromFile(pathToGrid, players: _*)
     if (playingFieldOpt.isDefined) {
       playingField = playingFieldOpt.get
     }
@@ -33,10 +33,10 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
 
   override def addPlayer(players: String*): Unit = {
     if (status != SETUP) {
-      println("You can't add new Players at this time of the game")
+      LOG.error("You can't add new Players at this time of the game")
     } else {
       initController.addPlayers(playingField, players: _*)
-      println("Players are successfully added.")
+      LOG.info("Players are successfully added.")
     }
   }
 
@@ -70,15 +70,14 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
         playerOnTurn.handholdSoldiers -= soldiers
         if (playerOnTurn.handholdSoldiers == 0) {
           changeToAttackPhase()
-          soldiers
         }
         soldiers
       } else {
-        println("You don't have that much soldiers to distribute")
+        LOG.info("You don't have that much soldiers to distribute")
         0
       }
     } else {
-      println("You are not in the Reinforcement Phase")
+      LOG.info("You are not in the Reinforcement Phase")
       0
     }
   }
