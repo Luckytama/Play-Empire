@@ -92,8 +92,7 @@ libraryDependencies += "org.scala-lang.modules" % "scala-swing_2.12" % "2.0.3"
 libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % Test
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % Test
 
-coverageExcludedPackages := "\\target" +
-  "\\de\\htwg\\se\\empire\\view"
+coverageExcludedPackages := "target\\.*;de\\.htwg\\.se\\.empire\\.view.*;forms\\.*;jobs\\.*"
 
 fork in run := true
 
