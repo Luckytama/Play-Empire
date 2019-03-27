@@ -17,8 +17,16 @@ function showNotification(isError, message) {
 
 
 $(document).ready(function () {
+    
+    let ws;
 
-    let ws = new WebSocket("ws://htwg-wt-empire.herokuapp.com/ws");
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        ws = new WebSocket("ws://localhost:9000/ws");
+
+    } else {
+        ws = new WebSocket("wss://localhost:9000/ws");
+    }
+
     //On reload functions
     window.onload = connectWebSocket(ws);
 
@@ -49,25 +57,21 @@ $(document).ready(function () {
             getStatus: function () {
                 let data = {};
                 data.function = "getStatus";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getPlayerInfo: function () {
                 let data = {};
                 data.function = "getPlayerInfo";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getCountries: function () {
                 let data = {};
                 data.function = "getCountries";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getHandholdSoldiers: function () {
                 let data = {};
                 data.function = "getHandholdSoldiers";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getAttackableCountries: function () {
@@ -76,7 +80,6 @@ $(document).ready(function () {
                     data.function = "getAttackableCountries";
                     data.country = app.countryToAttackFrom;
                     app.getAttackableSoldiers();
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                 }
             },
@@ -101,7 +104,6 @@ $(document).ready(function () {
             completeRound: function () {
                 let data = {};
                 data.function = "completeRound";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
                 app.updateGame();
             },
@@ -136,12 +138,11 @@ $(document).ready(function () {
                 }
             },
             distributeSoldiers: function () {
-                if (!isNaN(app.soldiersToDistribute) && app.soldiersToDistribute > 0 ) {
+                if (!isNaN(app.soldiersToDistribute) && app.soldiersToDistribute > 0) {
                     let data = {};
                     data.function = "distributeSoldiers";
                     data.soldiersToDistribute = app.soldiersToDistribute;
                     data.countryToDistribute = app.countryToDistribute;
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
                     //app.soldiersToDistribute = "";
@@ -152,13 +153,12 @@ $(document).ready(function () {
                 }
             },
             attackCountry: function () {
-                if (app.soldiersToAttack !== "" && !isNaN(app.soldiersToAttack) && app.soldiersToAttack > 0 ) {
+                if (app.soldiersToAttack !== "" && !isNaN(app.soldiersToAttack) && app.soldiersToAttack > 0) {
                     let data = {};
                     data.function = "attackCountry";
                     data.attackCountry = app.countryToAttackFrom;
                     data.defendCountry = app.countryToAttack;
                     data.amountSoldiers = app.soldiersToAttack;
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
                     app.colorCountries();
@@ -178,7 +178,7 @@ $(document).ready(function () {
                 })
             },
             clickCountry: function () {
-                $("#layer4 path").on("click", function(e) {
+                $("#layer4 path").on("click", function (e) {
                     if (app.playerOnTurn === app.firstPlayer) {
                         if ($(this).hasClass("player_1")) {
                             $(".active").removeClass("active");
@@ -215,20 +215,20 @@ $(document).ready(function () {
                 if (app.playerOnTurn === app.firstPlayer) {
                     for (let c of app.countries) {
                         $("#" + c.name).addClass("player_1");
-                        $("#" + c.name).attr("data-content","Soldiers: " + c.soldiers);
+                        $("#" + c.name).attr("data-content", "Soldiers: " + c.soldiers);
                     }
                     $("#layer4 path").each(function (e) {
-                        if(!$(this).hasClass("player_1")) {
+                        if (!$(this).hasClass("player_1")) {
                             $(this).addClass("player_2");
                         }
                     })
                 } else {
                     for (let c of app.countries) {
                         $("#" + c.name).addClass("player_2");
-                        $("#" + c.name).attr("data-content","Soldiers: " + c.soldiers);
+                        $("#" + c.name).attr("data-content", "Soldiers: " + c.soldiers);
                     }
                     $("#layer4 path").each(function (e) {
-                        if(!$(this).hasClass("player_2")) {
+                        if (!$(this).hasClass("player_2")) {
                             $(this).addClass("player_1");
                         }
                     })
@@ -282,6 +282,7 @@ $(document).ready(function () {
     });
 
     let timerId = 0;
+
     function keepAlive() {
         let timeout = 20000;
         let data = {};
@@ -298,7 +299,9 @@ $(document).ready(function () {
         }
     }
 
-    function isOpen(ws) { return ws.readyState === ws.OPEN }
+    function isOpen(ws) {
+        return ws.readyState === ws.OPEN
+    }
 
     function connectWebSocket(ws) {
 
@@ -320,16 +323,14 @@ $(document).ready(function () {
                 } else if (message.hasOwnProperty("attackMessage")) {
                     showNotification(false, message.attackMessage);
                 }
-            }
-            else if (e.data instanceof ArrayBuffer) {
+            } else if (e.data instanceof ArrayBuffer) {
                 console.log('ArrayBuffer received: ' + e.data);
-            }
-            else if (e.data instanceof Blob) {
+            } else if (e.data instanceof Blob) {
                 console.log('Blob received: ' + e.data);
             }
         };
 
-        ws.onopen = function() {
+        ws.onopen = function () {
             console.log("Connected to Websocket");
             keepAlive();
         };
