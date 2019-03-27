@@ -48,7 +48,7 @@ class DefaultAttackController extends AttackController {
   }
 
   private def rollDice(attackerDice: Int): Array[Int] = {
-    val numbers = Array[Int](attackerDice)
+    val numbers = new Array[Int](attackerDice)
     for (i <- 0 until attackerDice) {
       /* nextInt generates a number from 0 to exclusive upper cap,
       * so the Upper cap is one smaller that zero is excluded with an additional 1

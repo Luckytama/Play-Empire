@@ -33,7 +33,7 @@ class CountryTest extends WordSpec with Matchers {
         assertThrows[IllegalArgumentException](country.addSoldiers(-1))
       }
     }
-    "remove soldiers" should {
+    "remove positive amount of soldiers" should {
       "have 0 soldiers" in {
         country.removeSoldiers(7)
         country.soldiers should be(0)
@@ -41,7 +41,7 @@ class CountryTest extends WordSpec with Matchers {
     }
     "remove an invalid amount of soldiers" should {
       "throw an Exception" in {
-        assertThrows[IllegalArgumentException](country.addSoldiers(-1))
+        assertThrows[IllegalArgumentException](country.removeSoldiers(-1))
       }
     }
   }
