@@ -201,5 +201,16 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
         gameController.playerOnTurn should be(gameController.playingField.getPlayer("Markus").get)
       }
     }
+    "called getAttackableCountries with valid country" should {
+      "return a List of attackable countries" in {
+        val srcCountry = Country("source", List("target"))
+        val targetCountry = Country("target", List("source"))
+        val player = Player("player")
+        player.addCountry(srcCountry)
+        val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(srcCountry, targetCountry)))))
+        gameController.playerOnTurn = player
+        gameController.getAttackableCountries("source") should be(List("target"))
+      }
+    }
   }
 }
