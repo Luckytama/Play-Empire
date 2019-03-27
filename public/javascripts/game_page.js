@@ -18,7 +18,14 @@ function showNotification(isError, message) {
 
 $(document).ready(function () {
 
-    let ws = new WebSocket("ws://localhost:9000/ws");
+    let ws;
+
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+        ws = new WebSocket("ws://localhost:9000/ws");
+
+    } else {
+        ws = new WebSocket("wss://localhost:9000/ws");
+    }
     //On reload functions
     window.onload = connectWebSocket(ws);
 
@@ -49,25 +56,21 @@ $(document).ready(function () {
             getStatus: function () {
                 let data = {};
                 data.function = "getStatus";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getPlayerInfo: function () {
                 let data = {};
                 data.function = "getPlayerInfo";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getCountries: function () {
                 let data = {};
                 data.function = "getCountries";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getHandholdSoldiers: function () {
                 let data = {};
                 data.function = "getHandholdSoldiers";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
             },
             getAttackableCountries: function () {
@@ -76,7 +79,6 @@ $(document).ready(function () {
                     data.function = "getAttackableCountries";
                     data.country = app.countryToAttackFrom;
                     app.getAttackableSoldiers();
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                 }
             },
@@ -101,7 +103,6 @@ $(document).ready(function () {
             completeRound: function () {
                 let data = {};
                 data.function = "completeRound";
-                console.log(JSON.stringify(data));
                 ws.send(JSON.stringify(data));
                 app.updateGame();
             },
@@ -141,7 +142,6 @@ $(document).ready(function () {
                     data.function = "distributeSoldiers";
                     data.soldiersToDistribute = app.soldiersToDistribute;
                     data.countryToDistribute = app.countryToDistribute;
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
                     //app.soldiersToDistribute = "";
@@ -158,7 +158,6 @@ $(document).ready(function () {
                     data.attackCountry = app.countryToAttackFrom;
                     data.defendCountry = app.countryToAttack;
                     data.amountSoldiers = app.soldiersToAttack;
-                    console.log(JSON.stringify(data));
                     ws.send(JSON.stringify(data));
                     app.updateGame();
                     app.colorCountries();
