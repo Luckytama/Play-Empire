@@ -144,14 +144,7 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
   private def checkIfAttackIsValid(srcCountry: String, targetCountry: String, soldiers: Int): Boolean = {
     val src = playingField.getCountry(srcCountry)
     val target = playingField.getCountry(targetCountry)
-    if ((src.isDefined && target.isDefined)
-      && src.get.adjacentCountries.contains(target.get.name)
-      && (src.get.soldiers > soldiers) && (playerOnTurn.countries.contains(src.get)
-        && !playerOnTurn.countries.contains(target.get))) {
-      true
-    } else {
-      false
-    }
+    (src.isDefined && target.isDefined) && src.get.adjacentCountries.contains(target.get.name) && (src.get.soldiers > soldiers) && (playerOnTurn.countries.contains(src.get) && !playerOnTurn.countries.contains(target.get))
   }
 
   private def changeToAttackPhase(): Unit = {
@@ -173,5 +166,5 @@ case class DefaultGameController @Inject() (var playingField: Grid) extends Game
     }
   }
 
-  private def checkIfPlayingFieldIsValid(): Boolean = if (playingField.getAllCountries.nonEmpty && playingField.players.length >= 2) true else false
+  private def checkIfPlayingFieldIsValid(): Boolean = playingField.getAllCountries.nonEmpty && playingField.players.length >= 2
 }
