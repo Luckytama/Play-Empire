@@ -26,6 +26,7 @@ $(document).ready(function () {
     } else {
         ws = new WebSocket("wss://localhost:9000/ws");
     }
+
     //On reload functions
     window.onload = connectWebSocket(ws);
 
