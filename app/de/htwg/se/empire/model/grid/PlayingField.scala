@@ -29,7 +29,7 @@ case class PlayingField(continents: List[Continent], players: List[Player] = Lis
   }
 
   def removePlayer(player: Player): PlayingField = {
-    copy(players = players.filter(_ equals player))
+    copy(players = players.filter(_ != player))
   }
 
   def getAllCountries: List[Country] = {

@@ -8,6 +8,7 @@ case class Country(name: String, adjacentCountries: List[String]) {
 
   var soldiers = 0
 
+  //TODO: refactor with Try
   def addSoldiers(numberOfSoldiers: Int): Unit = {
     if (0 > numberOfSoldiers) {
       LOG.error("Numbers of soldiers can't be negative or null")

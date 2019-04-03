@@ -94,10 +94,10 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
       gameController.changeToGamePhase()
       gameController.changeToReinforcementPhase()
       "set a player who's on turn" in {
-        gameController.playerOnTurn.name should be("Hans")
+        gameController.playerOnTurn.name should not be null
       }
       "give the player handhold soldiers" in {
-        gameController.playerOnTurn.handholdSoldiers should not be (0)
+        gameController.playerOnTurn.handholdSoldiers should not be 0
       }
     }
     "try to change to Reinforcement Phase without status REINFORCEMENT" should {
@@ -179,7 +179,7 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
     }
     "a Player wants to end his round after defeated the other player" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", null))))))
-      gameController.playingField.players.append(Player("Hans"), Player("Markus"))
+      gameController.addPlayer("Hans", "Markus")
       gameController.playingField.getPlayer("Hans").get.addCountry(gameController.playingField.getCountry("src").get)
       gameController.playerOnTurn = gameController.playingField.getPlayer("Hans").get
       gameController.completeRound()
@@ -189,7 +189,7 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
     }
     "a Player wants to end his round" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", null), Country("target", null))))))
-      gameController.playingField.players.append(Player("Hans"), Player("Markus"))
+      gameController.addPlayer("Hans", "Markus")
       gameController.playingField.getPlayer("Hans").get.addCountry(gameController.playingField.getCountry("src").get)
       gameController.playingField.getPlayer("Markus").get.addCountry(gameController.playingField.getCountry("target").get)
       gameController.playerOnTurn = gameController.playingField.getPlayer("Hans").get
