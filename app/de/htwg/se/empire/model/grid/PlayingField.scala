@@ -5,28 +5,31 @@ import org.apache.logging.log4j.{ LogManager, Logger }
 
 import scala.collection.mutable.ListBuffer
 
-case class PlayingField(continents: List[Continent]) {
+case class PlayingField(continents: List[Continent], players: List[Player] = List.empty) {
 
   def this() = this(List.empty[Continent])
 
-  var players: ListBuffer[Player] = ListBuffer()
-
   val LOG: Logger = LogManager.getLogger(this.getClass)
 
-  def addPlayer(player: Player): Unit = {
+  def addPlayer(player: Player): PlayingField = {
     if (5 >= players.size) {
-      players.append(player)
+      copy(players = player :: players)
     } else {
       LOG.info("There can't be more than 5 players.")
+      this
     }
   }
 
-  def removePlayer(player: Player): Unit = {
-    if (players.contains(player)) {
-      players.remove(players.indexOf(player))
-    } else {
-      LOG.info("Cannot find Player")
+  def addPlayers(players: String*): PlayingField = {
+    var playingField: PlayingField = copy()
+    for (playerName <- players) {
+      playingField = playingField.addPlayer(Player(playerName))
     }
+    playingField
+  }
+
+  def removePlayer(player: Player): PlayingField = {
+    copy(players = players.filter(_ equals player))
   }
 
   def getAllCountries: List[Country] = {

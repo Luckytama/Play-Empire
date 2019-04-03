@@ -8,6 +8,4 @@ trait InitController {
   def randDistributeCountries(playingField: PlayingField)
 
   def randDistributeSoldiers(playingField: PlayingField)
-
-  def addPlayers(playingField: PlayingField, player: String*)
 }

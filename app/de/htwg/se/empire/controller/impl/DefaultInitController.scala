@@ -24,8 +24,7 @@ class DefaultInitController extends InitController {
   def loadGridFromFile(pathToGrid: String, players: String*): Option[PlayingField] = {
     val parser = new JsonParser
     try {
-      val playingField = parser.parseFileToPlayingField(pathToGrid)
-      players.foreach(p => playingField.addPlayer(Player(p)))
+      val playingField = parser.parseFileToPlayingField(pathToGrid).addPlayers(players: _*)
       Some.apply(playingField)
     } catch {
       case fnfe: FileNotFoundException =>
@@ -35,10 +34,6 @@ class DefaultInitController extends InitController {
         LOG.error("Unhandled exception")
         None
     }
-  }
-
-  def addPlayers(playingField: PlayingField, players: String*): Unit = {
-    players.foreach(p => playingField.addPlayer(Player(p)))
   }
 
   /*

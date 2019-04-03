@@ -34,7 +34,7 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
     if (status != SETUP) {
       LOG.error("You can't add new Players at this time of the game")
     } else {
-      initController.addPlayers(playingField, players: _*)
+      this.playingField = playingField.addPlayers(players: _*)
       LOG.info("Players are successfully added.")
     }
   }
@@ -130,7 +130,7 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
   private def isPlayerDefeated: Option[Player] = {
     var defeatedPlayer: Option[Player] = None
     playingField.players.foreach(p => if (p.countries.isEmpty) {
-      playingField.players.remove(playingField.players.indexOf(p))
+      this.playingField = playingField.removePlayer(p)
       defeatedPlayer = Some(p)
     })
     if (playingField.players.length == 1) {
