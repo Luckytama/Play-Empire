@@ -18,13 +18,12 @@ function showNotification(isError, message) {
 
 $(document).ready(function () {
 
-    let ws;
-
+    let  ws;
     if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
         ws = new WebSocket("ws://localhost:9000/ws");
 
     } else {
-        ws = new WebSocket("wss://localhost:9000/ws");
+        ws = new WebSocket('wss://' + window.location.host + '/ws');
     }
 
     //On reload functions
