@@ -1,13 +1,13 @@
 package de.htwg.se.empire.controller
 
-import de.htwg.se.empire.model.Grid
+import de.htwg.se.empire.model.grid.PlayingField
 
 trait InitController {
-  def loadGridFromFile(pathToGrid: String, players: String*): Option[Grid]
+  def loadGridFromFile(pathToGrid: String, players: String*): Option[PlayingField]
 
-  def randDistributeCountries(playingField: Grid)
+  def randDistributeCountries(playingField: PlayingField)
 
-  def randDistributeSoldiers(playingField: Grid)
+  def randDistributeSoldiers(playingField: PlayingField)
 
-  def addPlayers(playingField: Grid, player: String*)
+  def addPlayers(playingField: PlayingField, player: String*)
 }
