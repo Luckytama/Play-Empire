@@ -1,36 +1,37 @@
 package de.htwg.se.empire.model.player
 
 import de.htwg.se.empire.model.grid.Country
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
 
-import scala.collection.mutable.ListBuffer
-
-case class Player(name: String) {
-
-  val countries = new ListBuffer[Country]
-  var handholdSoldiers: Int = 0
+case class Player(name: String, countries: List[Country] = List.empty, handholdSoldiers: Int = 0) {
 
   val LOG: Logger = LogManager.getLogger(this.getClass)
 
-  def addCountry(country: Country): Unit = countries.append(country)
-
-  def removeCountry(country: Country): Unit = {
+  //TODO: Add Try
+  def addCountry(country: Country): Player = {
     if (countries.contains(country)) {
-      countries.remove(countries.indexOf(country))
+      LOG.info("Could not add " + country.name + " because player already own country")
+      copy()
     } else {
-      LOG.error("Country is not in the list.")
+      copy(countries = country :: countries)
     }
   }
 
-  def addHandholdSoldiers(soldiers: Int): Unit = {
-    handholdSoldiers += soldiers
+  def removeCountry(country: Country): Player = {
+    if (countries.contains(country)) {
+      copy(countries = countries.filter(_ != country))
+    } else {
+      LOG.error("Country is not in the list.")
+      copy()
+    }
   }
 
-  def putSoldiers(soldiers: Int): Unit = {
+  def putSoldiers(soldiers: Int): Player = {
     if (0 > (handholdSoldiers - soldiers)) {
       LOG.warn("You don't have that amout of soldiers in your hands.")
+      copy()
     } else {
-      handholdSoldiers -= soldiers
+      copy(handholdSoldiers = handholdSoldiers - soldiers)
     }
   }
 

@@ -6,7 +6,7 @@ import de.htwg.se.empire.controller.InitController
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.impl.JsonParser
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.util.Random
 
@@ -39,26 +39,28 @@ class DefaultInitController extends InitController {
   /*
    * Distribute randomly all countries to all player with one soldiers in it
    */
-  def randDistributeCountries(playingField: PlayingField): Unit = {
+  def randDistributeCountries(playingField: PlayingField): PlayingField = {
     val allCountries = playingField.getAllCountries
+    var updatedPlayingField = playingField
     if (1 <= playingField.players.length) {
       val playerCountries = splitList(Random.shuffle(allCountries), playingField.players.length) zip playingField.players
-      for ((cList, p) <- playerCountries) {
-        for (c <- cList) {
-          c.addSoldiers(INIT_VALUE_SOLDIERS_PER_COUNTRY)
-          p.addCountry(c)
+      for ((countries, player) <- playerCountries) {
+        for (country <- countries) {
+          updatedPlayingField = updatedPlayingField.updateCountry(country.addSoldiers(INIT_VALUE_SOLDIERS_PER_COUNTRY))
+          updatedPlayingField.copy(players = updatedPlayingField.players.updated(updatedPlayingField.players.indexOf(player), player.addCountry(country)))
         }
       }
     } else {
       LOG.info("There are to less players to start the game")
     }
+    updatedPlayingField
   }
 
   /*
    * Distribute soldiers
    * 5 Players: 25, 4 Players: 30, 3 Players: 35, 2 Players: 40
    */
-  def randDistributeSoldiers(playingField: PlayingField): Unit = {
+  def randDistributeSoldiers(playingField: PlayingField): PlayingField = {
     playingField.players.length match {
       case 5 =>
         distribute(playingField, INIT_SOLDIERS_5PLAYER)
@@ -70,20 +72,29 @@ class DefaultInitController extends InitController {
         distribute(playingField, INIT_SOLDIERS_2PLAYER)
       case _ =>
         LOG.error("There are not a valid number of players")
+        playingField
     }
   }
 
-  private def distribute(playingField: PlayingField, soldiers: Int): Unit = {
-    playingField.players.foreach(p => distributeSoldierToRandCountry(p, soldiers - p.getNumberOfAllSoldiers))
+  private def distribute(playingField: PlayingField, soldiers: Int): PlayingField = {
+    var updatedPlayingField = playingField
+    for (player <- playingField.players) {
+      val updatedPlayer = distributeSoldierToRandCountry(player, soldiers - player.getNumberOfAllSoldiers)
+      updatedPlayingField = playingField.copy(players = updatedPlayingField.players.updated(updatedPlayingField.players.indexOf(player), updatedPlayer))
+    }
+    updatedPlayingField
   }
 
-  private def distributeSoldierToRandCountry(player: Player, soldiers: Int): Unit = {
+  private def distributeSoldierToRandCountry(player: Player, soldiers: Int): Player = {
     if (player.countries.isEmpty) {
       LOG.error("There are no countries set for player ", player.name)
-      None
+      player.copy()
     } else if (soldiers != 0) {
-      player.countries(Random.nextInt(player.countries.length)).addSoldiers(1)
-      distributeSoldierToRandCountry(player, soldiers - 1)
+      val randomCountry = player.countries(Random.nextInt(player.countries.length))
+      val updatedPlayer: Player = player.copy(countries = player.countries.updated(player.countries.indexOf(randomCountry), randomCountry.addSoldiers(1)))
+      distributeSoldierToRandCountry(updatedPlayer, soldiers - 1)
+    } else {
+      player
     }
   }
 

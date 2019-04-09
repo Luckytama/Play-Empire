@@ -1,13 +1,13 @@
 package de.htwg.se.empire.model.grid
 
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.collection.mutable.ListBuffer
 
-case class PlayingField(continents: List[Continent], players: List[Player] = List.empty) {
+case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: Player = Player("Nobody")) {
 
-  def this() = this(List.empty[Continent])
+  def this() = this(List.empty, List.empty, Player("Nobody"))
 
   val LOG: Logger = LogManager.getLogger(this.getClass)
 
@@ -28,9 +28,7 @@ case class PlayingField(continents: List[Continent], players: List[Player] = Lis
     playingField
   }
 
-  def removePlayer(player: Player): PlayingField = {
-    copy(players = players.filter(_ != player))
-  }
+  def removePlayer(player: Player): PlayingField = copy(players = players.filter(_ != player))
 
   def getAllCountries: List[Country] = {
     var countries = new ListBuffer[Country]
@@ -55,17 +53,63 @@ case class PlayingField(continents: List[Continent], players: List[Player] = Lis
   }
 
   def getCountry(countryName: String): Option[Country] = {
-    val c = getAllCountries find (_.name == countryName)
-    if (c.isDefined) {
-      c
+    val country = getAllCountries find (_.name == countryName)
+    if (country.isDefined) {
+      country
     } else {
       LOG.info("Country not found with ", countryName)
       None
     }
   }
 
+  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): PlayingField = {
+    val srcCountry = src.removeSoldiers(numberOfSoldiers)
+    val targetCountry = target.addSoldiers(numberOfSoldiers)
+    updateCountry(srcCountry).updateCountry(targetCountry)
+  }
+
+  //TODO: Add Try
+  def updateCountry(country: Country): PlayingField = {
+    for (continent <- continents) {
+      if (continent.countries.contains(country)) {
+        val indexInContinents = continents.indexOf(continent)
+        val indexInCountries = continent.countries.indexOf(country)
+        copy(continents = continents.updated(indexInContinents, continent.copy(countries = continent.countries.updated(indexInCountries, country))))
+      }
+    }
+    LOG.error("Could not find country named: " + country.name)
+    this
+  }
+
+  def updatePlayerOnTurn(player: Player): PlayingField = {
+    for (oldPlayer <- players) {
+      if (oldPlayer.name == player.name) {
+        copy(players = players.updated(players.indexOf(oldPlayer), player), playerOnTurn = player)
+      }
+    }
+    LOG.error("Could not find player named: " + player.name)
+    this
+  }
+
+  def addCountryToPlayer(updatePlayer: Player, country: Country): PlayingField = {
+    for (player <- players) {
+      if (player == updatePlayer) {
+        copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
+      }
+    }
+    this
+  }
+
+  def removeCountryFromPlayer(player: Player, country: Country): PlayingField =
+    copy(players = players.updated(players.indexOf(player), player.removeCountry(country)))
+
+  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField =
+    copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
+
+  def getPlayerOnTurn: Option[Player] = players.find(_ eq playerOnTurn)
+
   override def toString: String = {
-    var output = new StringBuilder
+    val output = new StringBuilder
     if (players.nonEmpty) {
       output.append("Players: " + players.mkString + "\n")
     }

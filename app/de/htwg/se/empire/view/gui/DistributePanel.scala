@@ -2,7 +2,7 @@ package de.htwg.se.empire.view.gui
 
 import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.util.Phase
-import javax.swing.border.{ EtchedBorder, TitledBorder }
+import javax.swing.border.{EtchedBorder, TitledBorder}
 
 import scala.collection.mutable.ListBuffer
 import scala.swing._
@@ -62,9 +62,9 @@ class DistributePanel(gameController: GameController) extends FlowPanel {
   def refresh(): Unit = {
     if (gameController.getCurrentPhase == Phase.REINFORCEMENT) {
       this.enable()
-      soldiersToDistribute.text = gameController.playerOnTurn.handholdSoldiers.toString
+      soldiersToDistribute.text = gameController.getPlayerOnTurn().handholdSoldiers.toString
       val countries = new ListBuffer[String]
-      gameController.playerOnTurn.countries.toList.foreach(c => {
+      gameController.getPlayerOnTurn().countries.toList.foreach(c => {
         countries.append(c.name)
       })
       this.comboPanel.contents.clear()

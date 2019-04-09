@@ -2,7 +2,7 @@ package de.htwg.se.empire.controller.impl
 
 import de.htwg.se.empire.controller.AttackController
 import de.htwg.se.empire.model.grid.Country
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.util.Random
 
@@ -12,25 +12,18 @@ class DefaultAttackController extends AttackController {
 
   val DICE_UPPER_CAP = 6
 
-  def attackCountry(src: Country, target: Country, numberOfSoldiers: Int): Unit = {
+  def attackCountry(src: Country, target: Country, numberOfSoldiers: Int): (Country, Country) = {
     val attackerValues = generateAttackingValues(numberOfSoldiers)
     val defenderValues = generateAttackingValues(target.soldiers)
 
     val result = performAttack(attackerValues, defenderValues)
 
-    if (src.soldiers - result._1 > 0) src.removeSoldiers(result._1) else {
+    if (src.soldiers - result._1 > 0 || target.soldiers < 0) {
       LOG.error("Something went wrong while attacking")
       throw new Exception
+    } else {
+      (src.removeSoldiers(result._1), target.removeSoldiers(result._2))
     }
-    target.removeSoldiers(result._2)
-    if (target.soldiers < 0) {
-      LOG.error("Something went wrong while attacking")
-    }
-  }
-
-  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): Unit = {
-    src.removeSoldiers(numberOfSoldiers)
-    target.addSoldiers(numberOfSoldiers)
   }
 
   private def generateAttackingValues(numberOfSoldiers: Int): Array[Int] = {

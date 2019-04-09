@@ -5,7 +5,7 @@ import de.htwg.se.empire.model.grid.PlayingField
 trait InitController {
   def loadGridFromFile(pathToGrid: String, players: String*): Option[PlayingField]
 
-  def randDistributeCountries(playingField: PlayingField)
+  def randDistributeCountries(playingField: PlayingField): PlayingField
 
-  def randDistributeSoldiers(playingField: PlayingField)
+  def randDistributeSoldiers(playingField: PlayingField): PlayingField
 }
