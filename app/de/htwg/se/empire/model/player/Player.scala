@@ -3,11 +3,12 @@ package de.htwg.se.empire.model.player
 import de.htwg.se.empire.model.grid.Country
 import org.apache.logging.log4j.{LogManager, Logger}
 
+import scala.util.{Failure, Success}
+
 case class Player(name: String, countries: List[Country] = List.empty, handholdSoldiers: Int = 0) {
 
   val LOG: Logger = LogManager.getLogger(this.getClass)
 
-  //TODO: Add Try
   def addCountry(country: Country): Player = {
     if (countries.contains(country)) {
       LOG.info("Could not add " + country.name + " because player already own country")
@@ -32,6 +33,16 @@ case class Player(name: String, countries: List[Country] = List.empty, handholdS
       copy()
     } else {
       copy(handholdSoldiers = handholdSoldiers - soldiers)
+    }
+  }
+
+  def addSoldiersToCountry(country: Country, numberOfSoldiers: Int): Player = {
+    country.addSoldiers(numberOfSoldiers) match {
+      case Success(updatedCountry) =>
+        copy(countries = countries.updated(countries.indexOf(country), updatedCountry))
+      case Failure(exception) =>
+        LOG.debug("Could not add " + numberOfSoldiers + " to country " + country.name, exception)
+        this
     }
   }
 

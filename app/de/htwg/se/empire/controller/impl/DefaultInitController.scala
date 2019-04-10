@@ -8,7 +8,7 @@ import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.impl.JsonParser
 import org.apache.logging.log4j.{LogManager, Logger}
 
-import scala.util.Random
+import scala.util.{Failure, Random, Success}
 
 class DefaultInitController extends InitController {
 
@@ -46,7 +46,12 @@ class DefaultInitController extends InitController {
       val playerCountries = splitList(Random.shuffle(allCountries), playingField.players.length) zip playingField.players
       for ((countries, player) <- playerCountries) {
         for (country <- countries) {
-          updatedPlayingField = updatedPlayingField.updateCountry(country.addSoldiers(INIT_VALUE_SOLDIERS_PER_COUNTRY))
+          country.addSoldiers(INIT_VALUE_SOLDIERS_PER_COUNTRY) match {
+            case Success(updatedCountry) =>
+              updatedPlayingField = updatedPlayingField.updateCountry(country, updatedCountry)
+            case Failure(exception) =>
+              LOG.error("There was a problem during distribute Countries to players")
+          }
           updatedPlayingField.copy(players = updatedPlayingField.players.updated(updatedPlayingField.players.indexOf(player), player.addCountry(country)))
         }
       }
@@ -91,7 +96,7 @@ class DefaultInitController extends InitController {
       player.copy()
     } else if (soldiers != 0) {
       val randomCountry = player.countries(Random.nextInt(player.countries.length))
-      val updatedPlayer: Player = player.copy(countries = player.countries.updated(player.countries.indexOf(randomCountry), randomCountry.addSoldiers(1)))
+      val updatedPlayer = player.addSoldiersToCountry(randomCountry, 1)
       distributeSoldierToRandCountry(updatedPlayer, soldiers - 1)
     } else {
       player

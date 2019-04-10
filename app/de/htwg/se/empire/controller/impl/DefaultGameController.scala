@@ -80,17 +80,19 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
     }
   }
 
-  override def attackCountry(srcCountry: String, targetCountry: String, soldiers: Int): String = {
-    if (checkIfAttackIsValid(srcCountry, targetCountry, soldiers)) {
-      val (src, target) = attackController.attackCountry(playingField.getCountry(srcCountry).get, playingField.getCountry(targetCountry).get, soldiers)
-      this.playingField = this.playingField.updateCountry(src)
-      this.playingField = this.playingField.updateCountry(target)
-      if (playingField.getCountry(targetCountry).get.soldiers == 0) {
-        val ownerTargetCountry = playingField.getPlayerForCountry(playingField.getCountry(targetCountry).get).get
-        this.playingField = this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountry).get)
-        this.playingField = this.playingField.addCountryToPlayer(this.playingField.playerOnTurn, this.playingField.getCountry(targetCountry).get)
+  override def attackCountry(srcCountryName: String, targetCountryName: String, soldiers: Int): String = {
+    if (checkIfAttackIsValid(srcCountryName, targetCountryName, soldiers)) {
+      val srcCountry = this.playingField.getCountry(srcCountryName).get
+      val targetCountry = this.playingField.getCountry(targetCountryName).get
+      val (src, target) = attackController.attackCountry(srcCountry, playingField.getCountry(targetCountryName).get, soldiers)
+      this.playingField = this.playingField.updateCountry(srcCountry, src)
+      this.playingField = this.playingField.updateCountry(targetCountry, target)
+      if (playingField.getCountry(targetCountryName).get.soldiers == 0) {
+        val ownerTargetCountry = playingField.getPlayerForCountry(playingField.getCountry(targetCountryName).get).get
+        this.playingField = this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountryName).get)
+        this.playingField = this.playingField.addCountryToPlayer(this.playingField.playerOnTurn, this.playingField.getCountry(targetCountryName).get)
         status = MOVING
-        this.playingField = this.playingField.moveSoldiers(playingField.getCountry(srcCountry).get, playingField.getCountry(targetCountry).get, playingField.getCountry(srcCountry).get.soldiers / 2)
+        this.playingField = this.playingField.moveSoldiers(playingField.getCountry(srcCountryName).get, playingField.getCountry(targetCountryName).get, playingField.getCountry(srcCountryName).get.soldiers / 2)
         "You win the battle and gain the country"
       } else {
         "The Country was defended"

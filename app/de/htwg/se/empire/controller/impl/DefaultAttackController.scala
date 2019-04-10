@@ -22,7 +22,7 @@ class DefaultAttackController extends AttackController {
       LOG.error("Something went wrong while attacking")
       throw new Exception
     } else {
-      (src.removeSoldiers(result._1), target.removeSoldiers(result._2))
+      (src.removeSoldiers(result._1).get, target.removeSoldiers(result._2).get)
     }
   }
 
@@ -42,12 +42,7 @@ class DefaultAttackController extends AttackController {
 
   private def rollDice(attackerDice: Int): Array[Int] = {
     val numbers = new Array[Int](attackerDice)
-    for (i <- 0 until attackerDice) {
-      /* nextInt generates a number from 0 to exclusive upper cap,
-      * so the Upper cap is one smaller that zero is excluded with an additional 1
-      */
-      numbers(i) = Random.nextInt(DICE_UPPER_CAP + 1)
-    }
+    for (i <- 0 until attackerDice) yield numbers(i) = Random.nextInt(DICE_UPPER_CAP + 1)
     numbers
   }
 

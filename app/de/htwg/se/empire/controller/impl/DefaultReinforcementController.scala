@@ -29,6 +29,6 @@ class DefaultReinforcementController extends ReinforcementController {
 
   def distributeSoldiers(playingField: PlayingField, countryName: String, soldiers: Int): PlayingField = {
     val country = playingField.getCountry(countryName)
-    if (country.isDefined) playingField.updateCountry(country.get.addSoldiers(soldiers)) else playingField
+    if (country.isDefined) playingField.addSoldiersToCountry(country.get, soldiers) else playingField
   }
 }

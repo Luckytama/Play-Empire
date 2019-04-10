@@ -65,19 +65,18 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
   def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): PlayingField = {
     val srcCountry = src.removeSoldiers(numberOfSoldiers)
     val targetCountry = target.addSoldiers(numberOfSoldiers)
-    updateCountry(srcCountry).updateCountry(targetCountry)
+    updateCountry(src, srcCountry.get).updateCountry(target, targetCountry.get)
   }
 
-  //TODO: Add Try
-  def updateCountry(country: Country): PlayingField = {
+  def updateCountry(oldCountry: Country, newCountry: Country): PlayingField = {
     for (continent <- continents) {
-      if (continent.countries.contains(country)) {
+      if (continent.countries.contains(oldCountry)) {
         val indexInContinents = continents.indexOf(continent)
-        val indexInCountries = continent.countries.indexOf(country)
-        copy(continents = continents.updated(indexInContinents, continent.copy(countries = continent.countries.updated(indexInCountries, country))))
+        val indexInCountries = continent.countries.indexOf(oldCountry)
+        copy(continents = continents.updated(indexInContinents, continent.copy(countries = continent.countries.updated(indexInCountries, newCountry))))
       }
     }
-    LOG.error("Could not find country named: " + country.name)
+    LOG.error("Could not find country named: " + oldCountry.name)
     this
   }
 
@@ -107,6 +106,8 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
 
   def getPlayerOnTurn: Option[Player] = players.find(_ eq playerOnTurn)
+
+  def addSoldiersToCountry(country: Country, numberOfSoldiers: Int): PlayingField = updateCountry(country, country.addSoldiers(numberOfSoldiers).get)
 
   override def toString: String = {
     val output = new StringBuilder
