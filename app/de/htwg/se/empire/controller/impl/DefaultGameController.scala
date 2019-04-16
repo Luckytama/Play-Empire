@@ -1,13 +1,16 @@
 package de.htwg.se.empire.controller.impl
 
-import com.google.inject.{Guice, Inject, Injector}
+import com.google.inject.{ Guice, Inject, Injector }
 import de.htwg.se.empire.EmpireModule
-import de.htwg.se.empire.controller.{AttackController, GameController, InitController, ReinforcementController}
+import de.htwg.se.empire.controller.{ AttackController, GameController, InitController, ReinforcementController }
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.Parser
-import de.htwg.se.empire.util.Phase.{Phase, _}
-import org.apache.logging.log4j.{LogManager, Logger}
+import de.htwg.se.empire.util.Phase.{ Phase, _ }
+import org.apache.logging.log4j.{ LogManager, Logger }
+import scala.concurrent.Future
+import scala.util.{ Failure, Success }
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class DefaultGameController @Inject() (var playingField: PlayingField) extends GameController {
 
@@ -23,17 +26,21 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
 
   override def setUpPhase(pathToGrid: String, players: String*): Unit = {
     status = SETUP
-    val playingFieldOpt = initController.loadGridFromFile(pathToGrid, players: _*)
-    if (playingFieldOpt.isDefined) {
-      this.playingField = playingFieldOpt.get
+    initController.loadGridFromFile(pathToGrid, players: _*).onComplete {
+      case Success(value) => this.playingField = value
+      case Failure(err) => LOG.error("Failed loading playingfield")
     }
+
   }
 
   override def addPlayer(players: String*): Unit = {
     if (status != SETUP) {
       LOG.error("You can't add new Players at this time of the game")
     } else {
-      this.playingField = playingField.addPlayers(players: _*)
+      playingField.addPlayers(players: _*).onComplete {
+        case Success(value) => LOG.info("Players are successfully added.")
+        case Failure(err) => LOG.error(err)
+      }
       LOG.info("Players are successfully added.")
     }
   }
@@ -54,8 +61,10 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
 
   override def changeToReinforcementPhase(): Unit = {
     if (status == REINFORCEMENT) {
-      this.playingField = playingField.distributeHandholdSoldiers(this.playingField.playerOnTurn, reinforcementController.calcSoldiersToDistribute(this.playingField, this.playingField.playerOnTurn))
-      println(this.playingField.playerOnTurn.name + " is on turn!\nYou have " + this.playingField.playerOnTurn.handholdSoldiers + " soldiers to distribute")
+      playingField.distributeHandholdSoldiers(this.playingField.playerOnTurn, reinforcementController.calcSoldiersToDistribute(this.playingField, this.playingField.playerOnTurn)).onComplete {
+        case Success(value) => println(this.playingField.playerOnTurn.name + " is on turn!\nYou have " + this.playingField.playerOnTurn.handholdSoldiers + " soldiers to distribute")
+        case Failure(err) => LOG.error("error")
+      }
     } else {
       println("You are not in the Reinforcement Phase")
     }
@@ -65,7 +74,10 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
     if (status == REINFORCEMENT) {
       if (this.playingField.playerOnTurn.handholdSoldiers - soldiers >= 0) {
         this.playingField = reinforcementController.distributeSoldiers(playingField, countryName, soldiers)
-        this.playingField = this.playingField.updatePlayerOnTurn(this.playingField.playerOnTurn.putSoldiers(this.playingField.playerOnTurn.handholdSoldiers - soldiers))
+        this.playingField.updatePlayerOnTurn(this.playingField.playerOnTurn.putSoldiers(this.playingField.playerOnTurn.handholdSoldiers - soldiers)).onComplete {
+          case Success(value) => LOG.info("Success")
+          case Failure(err) => LOG.error("error")
+        }
         if (this.playingField.playerOnTurn.handholdSoldiers == 0) {
           changeToAttackPhase()
         }
@@ -89,10 +101,19 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
       this.playingField = this.playingField.updateCountry(targetCountry, target)
       if (playingField.getCountry(targetCountryName).get.soldiers == 0) {
         val ownerTargetCountry = playingField.getPlayerForCountry(playingField.getCountry(targetCountryName).get).get
-        this.playingField = this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountryName).get)
-        this.playingField = this.playingField.addCountryToPlayer(this.playingField.playerOnTurn, this.playingField.getCountry(targetCountryName).get)
+        this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountryName).get).onComplete {
+          case Success(value) => LOG.info("Success")
+          case Failure(err) => LOG.error("error")
+        }
+        this.playingField.addCountryToPlayer(this.playingField.playerOnTurn, this.playingField.getCountry(targetCountryName).get).onComplete {
+          case Success(value) => LOG.info("Success")
+          case Failure(err) => LOG.error("error")
+        }
         status = MOVING
-        this.playingField = this.playingField.moveSoldiers(playingField.getCountry(srcCountryName).get, playingField.getCountry(targetCountryName).get, playingField.getCountry(srcCountryName).get.soldiers / 2)
+        this.playingField.moveSoldiers(playingField.getCountry(srcCountryName).get, playingField.getCountry(targetCountryName).get, playingField.getCountry(srcCountryName).get.soldiers / 2).onComplete {
+          case Success(value) => LOG.info("Success")
+          case Failure(err) => LOG.error("error")
+        }
         "You win the battle and gain the country"
       } else {
         "The Country was defended"

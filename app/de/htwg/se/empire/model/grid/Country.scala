@@ -1,8 +1,8 @@
 package de.htwg.se.empire.model.grid
 
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 case class Country(name: String, adjacentCountries: List[String], soldiers: Int = 0) {
 
