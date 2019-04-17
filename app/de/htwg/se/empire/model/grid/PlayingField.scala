@@ -86,7 +86,6 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-
   def updatePlayerOnTurn(player: Player): Future[PlayingField] = {
     Future {
       val maybePlayer = players.find(p => p.name == player.name)
@@ -95,6 +94,7 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
       } else {
         LOG.error("Could not find player named: " + player.name)
         this
+      }
     }
   }
 
