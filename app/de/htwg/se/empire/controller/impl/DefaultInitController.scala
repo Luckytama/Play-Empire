@@ -50,6 +50,7 @@ class DefaultInitController extends InitController {
     } else {
       LOG.info("There are to less players to start the game")
     }
+    println(updatedPlayingField)
     updatedPlayingField
   }
 

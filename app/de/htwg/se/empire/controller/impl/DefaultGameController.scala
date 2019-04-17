@@ -38,7 +38,10 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
       LOG.error("You can't add new Players at this time of the game")
     } else {
       playingField.addPlayers(players: _*).onComplete {
-        case Success(value) => LOG.info("Players are successfully added.")
+        case Success(value) => {
+          this.playingField = value
+          LOG.info("Players are successfully added.")
+        }
         case Failure(err) => LOG.error(err)
       }
       LOG.info("Players are successfully added.")
@@ -50,6 +53,7 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
       this.playingField = initController.randDistributeCountries(this.playingField)
       this.playingField = initController.randDistributeSoldiers(this.playingField)
       this.playingField = this.playingField.copy(playerOnTurn = this.playingField.players.head)
+      print(this.playingField)
       status = REINFORCEMENT
       publish(new PhaseChanged)
       changeToReinforcementPhase()
@@ -180,5 +184,7 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
     }
   }
 
-  private def checkIfPlayingFieldIsValid(): Boolean = playingField.getAllCountries.nonEmpty && playingField.players.length >= 2
+  private def checkIfPlayingFieldIsValid(): Boolean = {
+    playingField.getAllCountries.nonEmpty && playingField.players.length >= 2
+  }
 }

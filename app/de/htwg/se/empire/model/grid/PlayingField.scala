@@ -75,16 +75,15 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
   }
 
   def updateCountry(oldCountry: Country, newCountry: Country): PlayingField = {
-    for (continent <- continents) {
-      if (continent.countries.contains(oldCountry)) {
-        val indexInContinents = continents.indexOf(continent)
-        val indexInCountries = continent.countries.indexOf(oldCountry)
-        copy(continents = continents.updated(indexInContinents, continent.copy(countries = continent.countries.updated(indexInCountries, newCountry))))
-      }
+    val maybeContinent = continents.find(continent => continent.countries.contains(oldCountry))
+    if (maybeContinent.isDefined) {
+      val indexInContinents = continents.indexOf(maybeContinent.get)
+      val indexInCountries = maybeContinent.get.countries.indexOf(oldCountry)
+      copy(continents = continents.updated(indexInContinents, maybeContinent.get.copy(countries = maybeContinent.get.countries.updated(indexInCountries, newCountry))))
+    } else {
+      LOG.error("Could not find country named: " + oldCountry.name)
+      this
     }
-    LOG.error("Could not find country named: " + oldCountry.name)
-    this
-
   }
 
   def updatePlayerOnTurn(player: Player): Future[PlayingField] = {
