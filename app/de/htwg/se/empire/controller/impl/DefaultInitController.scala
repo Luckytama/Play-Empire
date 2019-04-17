@@ -6,9 +6,10 @@ import de.htwg.se.empire.controller.InitController
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.impl.JsonParser
-import org.apache.logging.log4j.{LogManager, Logger}
-
-import scala.util.{Failure, Random, Success}
+import org.apache.logging.log4j.{ LogManager, Logger }
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{ Failure, Random, Success }
 
 class DefaultInitController extends InitController {
 
@@ -21,19 +22,10 @@ class DefaultInitController extends InitController {
 
   val INIT_VALUE_SOLDIERS_PER_COUNTRY = 1
 
-  def loadGridFromFile(pathToGrid: String, players: String*): Option[PlayingField] = {
+  def loadGridFromFile(pathToGrid: String, players: String*): Future[PlayingField] = {
     val parser = new JsonParser
-    try {
-      val playingField = parser.parseFileToPlayingField(pathToGrid).addPlayers(players: _*)
-      Some.apply(playingField)
-    } catch {
-      case fnfe: FileNotFoundException =>
-        LOG.info("Can't find file with path ", pathToGrid)
-        None
-      case _: Throwable =>
-        LOG.error("Unhandled exception")
-        None
-    }
+    val playingField = parser.parseFileToPlayingField(pathToGrid).addPlayers(players: _*)
+    playingField
   }
 
   /*
@@ -58,6 +50,7 @@ class DefaultInitController extends InitController {
     } else {
       LOG.info("There are to less players to start the game")
     }
+    println(updatedPlayingField)
     updatedPlayingField
   }
 

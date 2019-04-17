@@ -1,8 +1,9 @@
 package de.htwg.se.empire.model.grid
 
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{LogManager, Logger}
-
+import org.apache.logging.log4j.{ LogManager, Logger }
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.mutable.ListBuffer
 
 case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: Player = Player("Nobody")) {
@@ -18,14 +19,17 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
       LOG.info("There can't be more than 5 players.")
       this
     }
+
   }
 
-  def addPlayers(players: String*): PlayingField = {
-    var playingField: PlayingField = copy()
-    for (playerName <- players) {
-      playingField = playingField.addPlayer(Player(playerName))
+  def addPlayers(players: String*): Future[PlayingField] = {
+    Future {
+      var playingField: PlayingField = copy()
+      for (playerName <- players) {
+        playingField = playingField.addPlayer(Player(playerName))
+      }
+      playingField
     }
-    playingField
   }
 
   def removePlayer(player: Player): PlayingField = copy(players = players.filter(_ != player))
@@ -62,10 +66,12 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): PlayingField = {
-    val srcCountry = src.removeSoldiers(numberOfSoldiers)
-    val targetCountry = target.addSoldiers(numberOfSoldiers)
-    updateCountry(src, srcCountry.get).updateCountry(target, targetCountry.get)
+  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): Future[PlayingField] = {
+    Future {
+      val srcCountry = src.removeSoldiers(numberOfSoldiers)
+      val targetCountry = target.addSoldiers(numberOfSoldiers)
+      updateCountry(src, srcCountry.get).updateCountry(target, targetCountry.get)
+    }
   }
 
   def updateCountry(oldCountry: Country, newCountry: Country): PlayingField = {
@@ -80,34 +86,48 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def updatePlayerOnTurn(player: Player): PlayingField = {
-    val maybePlayer = players.find(p => p.name == player.name)
-    if (maybePlayer.isDefined) {
-      copy(players = players.updated(players.indexOf(maybePlayer.get), player), playerOnTurn = player)
-    } else {
-      LOG.error("Could not find player named: " + player.name)
-      this
+
+  def updatePlayerOnTurn(player: Player): Future[PlayingField] = {
+    Future {
+      val maybePlayer = players.find(p => p.name == player.name)
+      if (maybePlayer.isDefined) {
+        copy(players = players.updated(players.indexOf(maybePlayer.get), player), playerOnTurn = player)
+      } else {
+        LOG.error("Could not find player named: " + player.name)
+        this
     }
   }
 
-  def addCountryToPlayer(updatePlayer: Player, country: Country): PlayingField = {
-    var playingField = this
-    for (player <- players) {
-      if (player == updatePlayer) {
-        playingField = copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
+  def addCountryToPlayer(updatePlayer: Player, country: Country): Future[PlayingField] = {
+    Future {
+      var playingField = this
+      for (player <- players) {
+        if (player == updatePlayer) {
+          playingField = copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
+        }
       }
+      playingField
     }
-    playingField
   }
 
-  def removeCountryFromPlayer(player: Player, country: Country): PlayingField =
-    copy(players = players.updated(players.indexOf(player), player.removeCountry(country)))
+  def removeCountryFromPlayer(player: Player, country: Country): Future[PlayingField] = {
+    Future {
+      copy(players = players.updated(players.indexOf(player), player.removeCountry(country)))
+    }
+  }
 
-  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField = copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
+  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): Future[PlayingField] = {
+    Future {
+      copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
+    }
+  }
 
   def getPlayerOnTurn: Option[Player] = players.find(_ eq playerOnTurn)
 
-  def addSoldiersToCountry(country: Country, numberOfSoldiers: Int): PlayingField = updateCountry(country, country.addSoldiers(numberOfSoldiers).get)
+  def addSoldiersToCountry(country: Country, numberOfSoldiers: Int): PlayingField = {
+    updateCountry(country, country.addSoldiers(numberOfSoldiers).get)
+
+  }
 
   override def toString: String = {
     val output = new StringBuilder

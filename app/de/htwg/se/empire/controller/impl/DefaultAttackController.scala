@@ -2,7 +2,7 @@ package de.htwg.se.empire.controller.impl
 
 import de.htwg.se.empire.controller.AttackController
 import de.htwg.se.empire.model.grid.Country
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
 
 import scala.util.Random
 

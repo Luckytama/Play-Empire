@@ -3,7 +3,10 @@ package de.htwg.se.empire.controller.impl
 import de.htwg.se.empire.controller.ReinforcementController
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{ Failure, Random, Success }
 
 class DefaultReinforcementController extends ReinforcementController {
 

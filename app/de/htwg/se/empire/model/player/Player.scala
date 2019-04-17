@@ -1,9 +1,9 @@
 package de.htwg.se.empire.model.player
 
 import de.htwg.se.empire.model.grid.Country
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
 
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 case class Player(name: String, countries: List[Country] = List.empty, handholdSoldiers: Int = 0) {
 
