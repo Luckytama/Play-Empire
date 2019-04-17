@@ -27,5 +27,7 @@ trait GameController extends Publisher {
 
   def getAttackableCountries(country: String): List[String]
 
-  def getPlayerOnTurn(): Player
+  def getPlayerOnTurn: Player
+
+  def setPlayerOnTurn(player: Player): Unit
 }

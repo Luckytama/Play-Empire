@@ -49,7 +49,7 @@ case class TUI(gameController: GameController) extends Reactor {
         val soldiers = readLine().toInt
         gameController.attackCountry(srcCountry, targetCountry, soldiers)
       case "p" =>
-        println(gameController.getPlayerOnTurn().toString)
+        println(gameController.getPlayerOnTurn.toString)
       case "c" =>
         gameController.completeRound()
       case _ =>

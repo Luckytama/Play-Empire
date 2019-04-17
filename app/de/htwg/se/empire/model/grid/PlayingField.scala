@@ -86,26 +86,27 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
+
   def updatePlayerOnTurn(player: Player): Future[PlayingField] = {
     Future {
-      for (oldPlayer <- players) {
-        if (oldPlayer.name == player.name) {
-          copy(players = players.updated(players.indexOf(oldPlayer), player), playerOnTurn = player)
-        }
-      }
-      LOG.error("Could not find player named: " + player.name)
-      this
+      val maybePlayer = players.find(p => p.name == player.name)
+      if (maybePlayer.isDefined) {
+        copy(players = players.updated(players.indexOf(maybePlayer.get), player), playerOnTurn = player)
+      } else {
+        LOG.error("Could not find player named: " + player.name)
+        this
     }
   }
 
   def addCountryToPlayer(updatePlayer: Player, country: Country): Future[PlayingField] = {
     Future {
+      var playingField = this
       for (player <- players) {
         if (player == updatePlayer) {
-          copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
+          playingField = copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
         }
       }
-      this
+      playingField
     }
   }
 

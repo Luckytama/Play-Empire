@@ -3,7 +3,7 @@ package de.htwg.se.empire.model.grid
 import de.htwg.se.empire.model.player.Player
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class PlayingFieldTest extends WordSpec with Matchers {
@@ -42,8 +42,10 @@ class PlayingFieldTest extends WordSpec with Matchers {
       }
       "provide player for country" in {
         playingField = playingField.addPlayer(player)
-        player.addCountry(sampleCountry)
-        playingField.getPlayerForCountry(sampleCountry) should be(Some(player))
+        playingField = playingField.addCountryToPlayer(player, sampleCountry)
+        val resultPlayer = playingField.getPlayerForCountry(sampleCountry)
+        resultPlayer.isDefined should be(true)
+        resultPlayer.get.countries should be(List(Country("Deutschland", null)))
       }
     }
   }

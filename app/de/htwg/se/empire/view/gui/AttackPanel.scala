@@ -15,15 +15,15 @@ class AttackPanel(gameController: GameController) extends FlowPanel {
   soldiersAmount.text = "0"
   val attackButton = new Button("Attack")
 
-  var sourceComboPanel = new FlowPanel {
+  var sourceComboPanel: FlowPanel = new FlowPanel {
     contents += sourceCountry
   }
 
-  var destComboPanel = new FlowPanel {
+  var destComboPanel: FlowPanel = new FlowPanel {
     contents += destCountry
   }
 
-  val attackPanel = new GridPanel(7, 1) {
+  val attackPanel: GridPanel = new GridPanel(7, 1) {
     border = new TitledBorder(new EtchedBorder(), "Attack country")
     contents += new Label("Choose country to attack from:")
     contents += sourceComboPanel
@@ -52,7 +52,7 @@ class AttackPanel(gameController: GameController) extends FlowPanel {
     if (gameController.getCurrentPhase == Phase.ATTACK) {
       this.enable()
       val countrySource = new ListBuffer[String]
-      gameController.getPlayerOnTurn().countries.toList.foreach(c => {
+      gameController.getPlayerOnTurn.countries.foreach(c => {
         countrySource.append(c.name)
       })
       sourceCountry = new ComboBox[String](countrySource) {
@@ -60,11 +60,11 @@ class AttackPanel(gameController: GameController) extends FlowPanel {
         reactions += {
           case SelectionChanged(_) => {
             val list = new ListBuffer[String]
-            gameController.getPlayerOnTurn().countries.toList.foreach(c => {
+            gameController.getPlayerOnTurn.countries.foreach(c => {
               if (c.name == sourceCountry.selection.item) {
                 soldiersAmount.text = (c.soldiers - 1).toString
                 c.adjacentCountries.foreach(f => {
-                  if (!gameController.getPlayerOnTurn().countries.toList.exists(p => p.name == f)) {
+                  if (!gameController.getPlayerOnTurn.countries.exists(p => p.name == f)) {
                     list.append(f)
                   }
                 })
