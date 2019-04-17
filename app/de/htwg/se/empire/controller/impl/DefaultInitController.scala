@@ -1,15 +1,13 @@
 package de.htwg.se.empire.controller.impl
 
-import java.io.FileNotFoundException
-
 import de.htwg.se.empire.controller.InitController
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.impl.JsonParser
-import org.apache.logging.log4j.{ LogManager, Logger }
+import org.apache.logging.log4j.{LogManager, Logger}
+
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{ Failure, Random, Success }
+import scala.util.{Failure, Random, Success}
 
 class DefaultInitController extends InitController {
 

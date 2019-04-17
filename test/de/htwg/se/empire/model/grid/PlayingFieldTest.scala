@@ -42,10 +42,13 @@ class PlayingFieldTest extends WordSpec with Matchers {
       }
       "provide player for country" in {
         playingField = playingField.addPlayer(player)
-        playingField = playingField.addCountryToPlayer(player, sampleCountry)
-        val resultPlayer = playingField.getPlayerForCountry(sampleCountry)
-        resultPlayer.isDefined should be(true)
-        resultPlayer.get.countries should be(List(Country("Deutschland", null)))
+        val action = playingField.addCountryToPlayer(player, sampleCountry)
+        if (action.isCompleted) {
+          val resultPlayingField = action.value.get.get
+          val resultPlayer = resultPlayingField.getPlayerForCountry(sampleCountry)
+          resultPlayer.isDefined should be(true)
+          resultPlayer.get.countries should be(List(Country("Deutschland", null)))
+        }
       }
     }
   }

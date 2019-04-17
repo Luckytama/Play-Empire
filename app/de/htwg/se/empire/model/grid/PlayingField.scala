@@ -1,10 +1,11 @@
 package de.htwg.se.empire.model.grid
 
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{ LogManager, Logger }
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import org.apache.logging.log4j.{LogManager, Logger}
+
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: Player = Player("Nobody")) {
 
@@ -100,13 +101,12 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
 
   def addCountryToPlayer(updatePlayer: Player, country: Country): Future[PlayingField] = {
     Future {
-      var playingField = this
-      for (player <- players) {
-        if (player == updatePlayer) {
-          playingField = copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
-        }
+      val maybePlayer = players.find(p => p == updatePlayer)
+      if (maybePlayer.isDefined) {
+        copy(players = players.updated(players.indexOf(updatePlayer), maybePlayer.get.addCountry(country)))
+      } else {
+        this
       }
-      playingField
     }
   }
 
