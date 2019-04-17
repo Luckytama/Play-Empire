@@ -3,13 +3,13 @@ package de.htwg.se.empire.model.grid
 import de.htwg.se.empire.model.player.Player
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class PlayingFieldTest extends WordSpec with Matchers {
   "A Playing Field" when {
     val sampleCountry = Country("Deutschland", null)
-    val playingField = PlayingField(List(Continent("Europa", 5, List(sampleCountry))))
+    var playingField = PlayingField(List(Continent("Europa", 5, List(sampleCountry))))
     "new" should {
       "have no players" in {
         playingField.players should be(List.empty)
@@ -29,7 +29,7 @@ class PlayingFieldTest extends WordSpec with Matchers {
     "add Player" should {
       val player = Player("Hannes")
       "have a player" in {
-        playingField.addPlayer(player)
+        playingField = playingField.addPlayer(player)
         playingField.players.length should be(1)
         playingField.getPlayer("Hannes").get should be(player)
       }
@@ -37,13 +37,15 @@ class PlayingFieldTest extends WordSpec with Matchers {
         playingField.toString should be("Players: Hannes => countries: []\nContinents: Europa => Bonus: 5, Countries: [Deutschland]")
       }
       "have no player after remove" in {
-        playingField.removePlayer(player)
+        playingField = playingField.removePlayer(player)
         playingField.players should be(List.empty)
       }
       "provide player for country" in {
-        playingField.addPlayer(player)
-        player.addCountry(sampleCountry)
-        playingField.getPlayerForCountry(sampleCountry) should be(Some(player))
+        playingField = playingField.addPlayer(player)
+        playingField = playingField.addCountryToPlayer(player, sampleCountry)
+        val resultPlayer = playingField.getPlayerForCountry(sampleCountry)
+        resultPlayer.isDefined should be(true)
+        resultPlayer.get.countries should be(List(Country("Deutschland", null)))
       }
     }
   }

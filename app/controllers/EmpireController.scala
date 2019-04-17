@@ -1,25 +1,23 @@
 package controllers
 
-import akka.actor.{ ActorSystem, _ }
+import akka.actor.{ActorSystem, _}
 import akka.stream.Materializer
-import com.google.inject.{ Guice, Injector }
+import com.google.inject.{Guice, Injector}
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.se.empire.EmpireModule
 import de.htwg.se.empire.controller.GameController
-import de.htwg.se.empire.model.Grid
 import de.htwg.se.empire.model.grid.Country
-import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import org.webjars.play.WebJarsUtil
-import play.api.i18n.{ I18nSupport, Messages }
-import play.api.libs.json.{ Json, _ }
+import play.api.i18n.I18nSupport
+import play.api.libs.json.{Json, _}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-import utils.auth.{ DefaultEnv, WithProvider }
+import utils.auth.{DefaultEnv, WithProvider}
 
 import scala.concurrent.ExecutionContext
 import scala.swing.Reactor
@@ -34,9 +32,8 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   materializer: Materializer
 ) extends AbstractController(cc) with I18nSupport {
 
-  var injector: Injector = Guice.createInjector(new EmpireModule)
-  var parser: Parser = injector.getInstance(classOf[Parser])
-  var playingField: Grid = injector.getInstance(classOf[Grid])
+  val injector: Injector = Guice.createInjector(new EmpireModule)
+
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
 
@@ -119,24 +116,23 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
 
   implicit val writer: Writes[Country] = (c: Country) => {
     Json.obj("name" -> c.name, "soldiers" -> c.soldiers, "adjacentCountries" -> c.adjacentCountries)
-
   }
 
   def getHandholdSoldiers: String = {
-    val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.playerOnTurn.handholdSoldiers)
+    val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.getPlayerOnTurn.handholdSoldiers)
     handholdSoldiers.toString
   }
 
   def getCountries: String = {
-    val countries = Json.obj("countries" -> gameController.playerOnTurn.countries)
+    val countries = Json.obj("countries" -> gameController.getPlayerOnTurn.countries)
     countries.toString
   }
 
   def getPlayerInfo: String = {
     val playerOnTurn = Json.obj("playerInfo" -> Json.obj(
-      "playerOnTurn" -> JsString(gameController.playerOnTurn.name),
-      "numberOfCountries" -> JsNumber(gameController.playerOnTurn.getCountryAmount),
-      "numberOfSoldiers" -> JsNumber(gameController.playerOnTurn.getNumberOfAllSoldiers)
+      "playerOnTurn" -> JsString(gameController.getPlayerOnTurn.name),
+      "numberOfCountries" -> JsNumber(gameController.getPlayerOnTurn.getCountryAmount),
+      "numberOfSoldiers" -> JsNumber(gameController.getPlayerOnTurn.getNumberOfAllSoldiers)
     ))
     playerOnTurn.toString
   }
@@ -146,15 +142,13 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     status.toString
   }
 
-  def newGame = Action {
-    playingField = injector.getInstance(classOf[Grid])
+  def newGame: Action[AnyContent] = Action {
     gameController = injector.getInstance(classOf[GameController])
     tui = TUI(gameController)
     Redirect("/empire")
   }
 
-  def newMapGame = Action {
-    playingField = injector.getInstance(classOf[Grid])
+  def newMapGame: Action[AnyContent] = Action {
     gameController = injector.getInstance(classOf[GameController])
     tui = TUI(gameController)
     Redirect("/empire/map")
@@ -170,7 +164,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
       Ok(views.html.map(gameController, request.identity))
   }
 
-  def startGame = Action { request =>
+  def startGame: Action[AnyContent] = Action { request =>
     val headers = request.body.asFormUrlEncoded.get
     val playernames = headers.get("players[]")
     val playingfieldFile = headers("playingfield").head

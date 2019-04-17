@@ -2,15 +2,13 @@ package de.htwg.se.empire.model.player
 
 import de.htwg.se.empire.model.grid.Country
 import org.junit.runner.RunWith
-import org.scalatest.{ Matchers, WordSpec }
 import org.scalatest.junit.JUnitRunner
-
-import scala.collection.mutable.ListBuffer
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class PlayerTest extends WordSpec with Matchers {
   "A Player" when {
-    val player = Player("Player1")
+    var player = Player("Player1")
     "new" should {
       "have a name" in {
         player.name should be("Player1")
@@ -27,20 +25,22 @@ class PlayerTest extends WordSpec with Matchers {
     }
     "two countries are added" should {
       "have 2 countries" in {
-        player.addCountry(Country("Another Country", null))
-        player.addCountry(Country("New Country", null))
-        player.countries should be(ListBuffer(Country("Another Country", null), Country("New Country", null)))
+        player = player.addCountry(Country("Another Country", null))
+        player = player.addCountry(Country("New Country", null))
+        player.countries should be(List(Country("New Country", null), Country("Another Country", null)))
       }
       "provide amount of soldiers on countries" in {
-        player.countries.head.addSoldiers(3)
-        player.countries.last.addSoldiers(2)
+        player = player.addCountry(Country("New Country", null, 3))
+        player = player.addCountry(Country("Another Country", null, 2))
         player.getNumberOfAllSoldiers should be(5)
       }
     }
     "a country is removed" should {
       "have 1 country" in {
-        player.removeCountry(Country("New Country", null))
-        player.countries should be(ListBuffer(Country("Another Country", null)))
+        val country = Country("A Country", null)
+        player = Player("Name", List(country))
+        player = player.removeCountry(country)
+        player.countries should be(List.empty)
       }
     }
     "a unkown country is removerd" should {
@@ -50,24 +50,20 @@ class PlayerTest extends WordSpec with Matchers {
     }
     "the country amount is requested" should {
       "be 1 country" in {
-        player.getCountryAmount should be(1)
-      }
-    }
-    "add handhold soldiers" should {
-      "have more handhold soldiers" in {
-        player.addHandholdSoldiers(5)
-        player.handholdSoldiers should be(5)
+        val player = Player("Name")
+        player.getCountryAmount should be(0)
       }
     }
     "put a valid amount of soldiers" should {
       "have less handhold soldiers" in {
-        player.putSoldiers(5)
+        var player = Player("Name", handholdSoldiers = 5)
+        player = player.putSoldiers(5)
         player.handholdSoldiers should be(0)
       }
     }
     "put an invalid amount of soldiers" should {
       "have the same amount of soldiers on hand" in {
-        player.putSoldiers(5)
+        player = player.putSoldiers(5)
         player.handholdSoldiers should be(0)
       }
     }

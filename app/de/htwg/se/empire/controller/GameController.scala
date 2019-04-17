@@ -9,8 +9,6 @@ trait GameController extends Publisher {
 
   def status: Phase
 
-  def playerOnTurn: Player
-
   def setUpPhase(pathToGrid: String, players: String*): Unit
 
   def addPlayer(players: String*): Unit
@@ -28,4 +26,8 @@ trait GameController extends Publisher {
   def getCurrentPhase: Phase
 
   def getAttackableCountries(country: String): List[String]
+
+  def getPlayerOnTurn: Player
+
+  def setPlayerOnTurn(player: Player): Unit
 }

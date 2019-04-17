@@ -1,14 +1,13 @@
 package de.htwg.se.empire.controller
 
 import de.htwg.se.empire.controller.impl.DefaultGameController
-import de.htwg.se.empire.model.grid.{ Continent, Country, PlayingField }
+import de.htwg.se.empire.model.grid.{Continent, Country, PlayingField}
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.util.Phase._
 import org.junit.runner.RunWith
-import org.scalamock.scalatest.MockFactory
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class DefaultGameControllerTest extends WordSpec with Matchers {
@@ -94,10 +93,10 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
       gameController.changeToGamePhase()
       gameController.changeToReinforcementPhase()
       "set a player who's on turn" in {
-        gameController.playerOnTurn.name should be("Hans")
+        gameController.getPlayerOnTurn.name should not be null
       }
       "give the player handhold soldiers" in {
-        gameController.playerOnTurn.handholdSoldiers should not be (0)
+        gameController.getPlayerOnTurn.handholdSoldiers should not be 0
       }
     }
     "try to change to Reinforcement Phase without status REINFORCEMENT" should {
@@ -120,21 +119,21 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
       val gameController = new DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("Country", null))))))
       gameController.status = Phase.REINFORCEMENT
       val player = Player("Hans")
-      gameController.playerOnTurn = player
+      gameController.playingField = gameController.playingField.copy(playerOnTurn = player)
       gameController.distributeSoldiers(5, "Country")
       "not infect the amount of soldiers on an country" in {
         gameController.playingField.getCountry("Country").get.soldiers should be(0)
       }
       "not infect the amount of handhold soldiers" in {
-        gameController.playerOnTurn.handholdSoldiers should be(0)
+        gameController.getPlayerOnTurn.handholdSoldiers should be(0)
       }
     }
     "a Player wants to distribute soldiers" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("Country", null))))))
       gameController.status = Phase.REINFORCEMENT
-      val player = Player("Hans")
-      gameController.playerOnTurn = player
-      player.handholdSoldiers = 5
+      var player = Player("Hans")
+      gameController.getPlayerOnTurn.handholdSoldiers should be(0)
+      player = player.copy(handholdSoldiers = 5)
       gameController.distributeSoldiers(5, "Country")
       "have less soldiers on hand" in {
         player.handholdSoldiers should be(0)
@@ -148,9 +147,9 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
     }
     "a Player wants to attack another country with an invalid attack" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", List("target")), Country("target", List("src")), Country("x", List("y")))))))
-      val player = Player("Hans")
-      player.handholdSoldiers = 5
-      gameController.playerOnTurn = player
+      var player = Player("Hans")
+      player = player.copy(handholdSoldiers = 5)
+      gameController.setPlayerOnTurn(player)
       "not perform the attack with invalid countrie names" in {
         gameController.attackCountry("x", "y", 0)
       }
@@ -167,21 +166,21 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
     }
     "a Player wants to attack another country with a valid attack" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", List("target")), Country("target", List("src")), Country("x", List("y")))))))
-      val player = Player("Hans")
-      player.handholdSoldiers = 5
+      var player = Player("Hans")
+      player = player.copy(handholdSoldiers = 5)
       player.addCountry(gameController.playingField.getCountry("src").get)
-      gameController.playingField.getCountry("src").get.soldiers = 10
-      gameController.playingField.getCountry("target").get.soldiers = 10
-      gameController.playerOnTurn = player
+      gameController.playingField.updateCountry(gameController.playingField.getCountry("src").get, gameController.playingField.getCountry("src").get.copy(soldiers = 10))
+      gameController.playingField.updateCountry(gameController.playingField.getCountry("target").get, gameController.playingField.getCountry("target").get.copy(soldiers = 10))
+      gameController.setPlayerOnTurn(player)
       "no Exception is thrown" in {
         gameController.attackCountry("src", "target", 2)
       }
     }
     "a Player wants to end his round after defeated the other player" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", null))))))
-      gameController.playingField.players.append(Player("Hans"), Player("Markus"))
+      gameController.addPlayer("Hans", "Markus")
       gameController.playingField.getPlayer("Hans").get.addCountry(gameController.playingField.getCountry("src").get)
-      gameController.playerOnTurn = gameController.playingField.getPlayer("Hans").get
+      gameController.setPlayerOnTurn(gameController.playingField.getPlayer("Hans").get)
       gameController.completeRound()
       "the game status should be FINISH" in {
         gameController.status should be(Phase.FINISH)
@@ -189,16 +188,27 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
     }
     "a Player wants to end his round" should {
       val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(Country("src", null), Country("target", null))))))
-      gameController.playingField.players.append(Player("Hans"), Player("Markus"))
+      gameController.addPlayer("Hans", "Markus")
       gameController.playingField.getPlayer("Hans").get.addCountry(gameController.playingField.getCountry("src").get)
       gameController.playingField.getPlayer("Markus").get.addCountry(gameController.playingField.getCountry("target").get)
-      gameController.playerOnTurn = gameController.playingField.getPlayer("Hans").get
+      gameController.setPlayerOnTurn(gameController.playingField.getPlayer("Hans").get)
       gameController.completeRound()
       "the game status should be REINFORCEMENT" in {
         gameController.status should be(Phase.REINFORCEMENT)
       }
       "the next player should be on turn" in {
-        gameController.playerOnTurn should be(gameController.playingField.getPlayer("Markus").get)
+        gameController.getPlayerOnTurn should be(gameController.playingField.getPlayer("Markus").get)
+      }
+    }
+    "called getAttackableCountries with valid country" should {
+      "return a List of attackable countries" in {
+        val srcCountry = Country("source", List("target"))
+        val targetCountry = Country("target", List("source"))
+        val player = Player("player")
+        player.addCountry(srcCountry)
+        val gameController = DefaultGameController(PlayingField(List(Continent("Continent", 5, List(srcCountry, targetCountry)))))
+        gameController.setPlayerOnTurn(player)
+        gameController.getAttackableCountries("source") should be(List("target"))
       }
     }
   }
