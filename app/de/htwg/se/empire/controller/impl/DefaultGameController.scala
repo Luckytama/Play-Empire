@@ -125,7 +125,9 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
     }
   }
 
-  override def getPlayerOnTurn(): Player = this.playingField.playerOnTurn
+  override def getPlayerOnTurn: Player = this.playingField.playerOnTurn
+
+  override def setPlayerOnTurn(player: Player): Unit = this.playingField = this.playingField.copy(playerOnTurn = player)
 
   private def nextPlayer: PlayingField = {
     val idx = playingField.players.indexOf(this.playingField.playerOnTurn)

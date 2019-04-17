@@ -69,41 +69,41 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
   }
 
   def updateCountry(oldCountry: Country, newCountry: Country): PlayingField = {
-    for (continent <- continents) {
-      if (continent.countries.contains(oldCountry)) {
-        val indexInContinents = continents.indexOf(continent)
-        val indexInCountries = continent.countries.indexOf(oldCountry)
-        copy(continents = continents.updated(indexInContinents, continent.copy(countries = continent.countries.updated(indexInCountries, newCountry))))
-      }
+    val maybeContinent = continents.find(continent => continent.countries.contains(oldCountry))
+    if (maybeContinent.isDefined) {
+      val indexInContinents = continents.indexOf(maybeContinent.get)
+      val indexInCountries = maybeContinent.get.countries.indexOf(oldCountry)
+      copy(continents = continents.updated(indexInContinents, maybeContinent.get.copy(countries = maybeContinent.get.countries.updated(indexInCountries, newCountry))))
+    } else {
+      LOG.error("Could not find country named: " + oldCountry.name)
+      this
     }
-    LOG.error("Could not find country named: " + oldCountry.name)
-    this
   }
 
   def updatePlayerOnTurn(player: Player): PlayingField = {
-    for (oldPlayer <- players) {
-      if (oldPlayer.name == player.name) {
-        copy(players = players.updated(players.indexOf(oldPlayer), player), playerOnTurn = player)
-      }
+    val maybePlayer = players.find(p => p.name == player.name)
+    if (maybePlayer.isDefined) {
+      copy(players = players.updated(players.indexOf(maybePlayer.get), player), playerOnTurn = player)
+    } else {
+      LOG.error("Could not find player named: " + player.name)
+      this
     }
-    LOG.error("Could not find player named: " + player.name)
-    this
   }
 
   def addCountryToPlayer(updatePlayer: Player, country: Country): PlayingField = {
+    var playingField = this
     for (player <- players) {
       if (player == updatePlayer) {
-        copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
+        playingField = copy(players = players.updated(players.indexOf(updatePlayer), player.addCountry(country)))
       }
     }
-    this
+    playingField
   }
 
   def removeCountryFromPlayer(player: Player, country: Country): PlayingField =
     copy(players = players.updated(players.indexOf(player), player.removeCountry(country)))
 
-  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField =
-    copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
+  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField = copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
 
   def getPlayerOnTurn: Option[Player] = players.find(_ eq playerOnTurn)
 

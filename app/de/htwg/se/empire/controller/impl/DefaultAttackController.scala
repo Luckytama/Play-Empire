@@ -18,11 +18,16 @@ class DefaultAttackController extends AttackController {
 
     val result = performAttack(attackerValues, defenderValues)
 
-    if (src.soldiers - result._1 > 0 || target.soldiers < 0) {
+    if (src.soldiers - result._1 > 0) {
+      val srcResult = src.removeSoldiers(result._1).get
+      val targetResult = target.removeSoldiers(result._2).get
+      if (target.soldiers < 0) {
+        LOG.error("Something went wrong while attacking")
+      }
+      (srcResult, targetResult)
+    } else {
       LOG.error("Something went wrong while attacking")
       throw new Exception
-    } else {
-      (src.removeSoldiers(result._1).get, target.removeSoldiers(result._2).get)
     }
   }
 

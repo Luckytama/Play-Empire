@@ -1,8 +1,8 @@
 package de.htwg.se.empire.model.grid
 
 import org.junit.runner.RunWith
-import org.scalatest.{ Matchers, WordSpec }
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class CountryTest extends WordSpec with Matchers {
@@ -24,8 +24,9 @@ class CountryTest extends WordSpec with Matchers {
     }
     "add soldiers" should {
       "have soldiers" in {
-        country.addSoldiers(5)
-        country.soldiers should be(5)
+        var country = Country("Name", null)
+        var countryTry = country.addSoldiers(5)
+        countryTry.get.soldiers should be(5)
       }
     }
     "add invalid amount of soldiers" should {
@@ -40,8 +41,9 @@ class CountryTest extends WordSpec with Matchers {
       }
     }
     "remove an invalid amount of soldiers" should {
-      "throw an Exception" in {
-        assertThrows[IllegalArgumentException](country.removeSoldiers(-1))
+      "return Failure" in {
+        val countryTry = country.removeSoldiers(-1)
+        countryTry.isFailure should be(true)
       }
     }
   }

@@ -76,7 +76,7 @@ class SwingGui(gameController: GameController) extends Frame {
         distributePanel.disable()
         attackPanel.disable()
         gameInfoPanel.disable()
-        JOptionPane.showMessageDialog(new JFrame(), "Player " + gameController.getPlayerOnTurn().name + " won!", "Success", JOptionPane.INFORMATION_MESSAGE)
+        JOptionPane.showMessageDialog(new JFrame(), "Player " + gameController.getPlayerOnTurn.name + " won!", "Success", JOptionPane.INFORMATION_MESSAGE)
       }
     }
     case event: PhaseChanged => {

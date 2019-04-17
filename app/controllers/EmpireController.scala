@@ -119,20 +119,20 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   }
 
   def getHandholdSoldiers: String = {
-    val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.getPlayerOnTurn().handholdSoldiers)
+    val handholdSoldiers = Json.obj("handholdSoldiers" -> gameController.getPlayerOnTurn.handholdSoldiers)
     handholdSoldiers.toString
   }
 
   def getCountries: String = {
-    val countries = Json.obj("countries" -> gameController.getPlayerOnTurn().countries)
+    val countries = Json.obj("countries" -> gameController.getPlayerOnTurn.countries)
     countries.toString
   }
 
   def getPlayerInfo: String = {
     val playerOnTurn = Json.obj("playerInfo" -> Json.obj(
-      "playerOnTurn" -> JsString(gameController.getPlayerOnTurn().name),
-      "numberOfCountries" -> JsNumber(gameController.getPlayerOnTurn().getCountryAmount),
-      "numberOfSoldiers" -> JsNumber(gameController.getPlayerOnTurn().getNumberOfAllSoldiers)
+      "playerOnTurn" -> JsString(gameController.getPlayerOnTurn.name),
+      "numberOfCountries" -> JsNumber(gameController.getPlayerOnTurn.getCountryAmount),
+      "numberOfSoldiers" -> JsNumber(gameController.getPlayerOnTurn.getNumberOfAllSoldiers)
     ))
     playerOnTurn.toString
   }

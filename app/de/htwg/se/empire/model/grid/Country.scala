@@ -20,8 +20,7 @@ case class Country(name: String, adjacentCountries: List[String], soldiers: Int 
     if (0 > numberOfSoldiers) {
       LOG.error("Numbers of soldiers to remove can't be negative or null")
       Failure(new IllegalArgumentException)
-    }
-    if (0 <= soldiers - numberOfSoldiers) Success(copy(soldiers = soldiers - numberOfSoldiers)) else Success(copy(soldiers = 0))
+    } else if (0 <= soldiers - numberOfSoldiers) Success(copy(soldiers = soldiers - numberOfSoldiers)) else Success(copy(soldiers = 0))
   }
 
   override def toString: String = name
