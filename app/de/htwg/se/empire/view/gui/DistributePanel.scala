@@ -2,7 +2,7 @@ package de.htwg.se.empire.view.gui
 
 import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.util.Phase
-import javax.swing.border.{ EtchedBorder, TitledBorder }
+import javax.swing.border.{EtchedBorder, TitledBorder}
 
 import scala.collection.mutable.ListBuffer
 import scala.swing._
@@ -64,7 +64,7 @@ class DistributePanel(gameController: GameController) extends FlowPanel {
       this.enable()
       soldiersToDistribute.text = gameController.getPlayerOnTurn.handholdSoldiers.toString
       val countries = new ListBuffer[String]
-      gameController.getPlayerOnTurn.countries.foreach(c => {
+      gameController.playingField.getCountriesForPlayer(gameController.getPlayerOnTurn).foreach(c => {
         countries.append(c.name)
       })
       this.comboPanel.contents.clear()

@@ -6,8 +6,7 @@ import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.parser.impl.JsonParser
 import org.apache.logging.log4j.{LogManager, Logger}
 
-import scala.concurrent.Future
-import scala.util.{Failure, Random, Success}
+import scala.util.Random
 
 class DefaultInitController extends InitController {
 
@@ -20,7 +19,7 @@ class DefaultInitController extends InitController {
 
   val INIT_VALUE_SOLDIERS_PER_COUNTRY = 1
 
-  def loadGridFromFile(pathToGrid: String, players: String*): Future[PlayingField] = {
+  def loadGridFromFile(pathToGrid: String, players: String*): PlayingField = {
     val parser = new JsonParser
     val playingField = parser.parseFileToPlayingField(pathToGrid).addPlayers(players: _*)
     playingField
@@ -30,25 +29,18 @@ class DefaultInitController extends InitController {
    * Distribute randomly all countries to all player with one soldiers in it
    */
   def randDistributeCountries(playingField: PlayingField): PlayingField = {
-    val allCountries = playingField.getAllCountries
     var updatedPlayingField = playingField
-    if (1 <= playingField.players.length) {
+    if (playingField.players.length < 2) {
+      LOG.debug("There are to less players to start the game")
+    } else {
+      val allCountries = playingField.getAllCountries
       val playerCountries = splitList(Random.shuffle(allCountries), playingField.players.length) zip playingField.players
       for ((countries, player) <- playerCountries) {
         for (country <- countries) {
-          country.addSoldiers(INIT_VALUE_SOLDIERS_PER_COUNTRY) match {
-            case Success(updatedCountry) =>
-              updatedPlayingField = updatedPlayingField.updateCountry(country, updatedCountry)
-            case Failure(exception) =>
-              LOG.error("There was a problem during distribute Countries to players")
-          }
-          updatedPlayingField.copy(players = updatedPlayingField.players.updated(updatedPlayingField.players.indexOf(player), player.addCountry(country)))
+          updatedPlayingField = updatedPlayingField.addCountryToPlayer(player, country)
         }
       }
-    } else {
-      LOG.info("There are to less players to start the game")
     }
-    println(updatedPlayingField)
     updatedPlayingField
   }
 
@@ -74,23 +66,25 @@ class DefaultInitController extends InitController {
 
   private def distribute(playingField: PlayingField, soldiers: Int): PlayingField = {
     var updatedPlayingField = playingField
+    for (country <- updatedPlayingField.getAllCountries) {
+      updatedPlayingField = updatedPlayingField.addSoldiersToCountry(country, INIT_VALUE_SOLDIERS_PER_COUNTRY)
+    }
     for (player <- playingField.players) {
-      val updatedPlayer = distributeSoldierToRandCountry(player, soldiers - player.getNumberOfAllSoldiers)
-      updatedPlayingField = playingField.copy(players = updatedPlayingField.players.updated(updatedPlayingField.players.indexOf(player), updatedPlayer))
+      updatedPlayingField = distributeSoldierToRandCountry(updatedPlayingField, player, soldiers - playingField.getNumberOfAllSoldiers(player))
     }
     updatedPlayingField
   }
 
-  private def distributeSoldierToRandCountry(player: Player, soldiers: Int): Player = {
+  private def distributeSoldierToRandCountry(playingField: PlayingField, player: Player, soldiers: Int): PlayingField = {
     if (player.countries.isEmpty) {
       LOG.error("There are no countries set for player ", player.name)
-      player.copy()
+      playingField
     } else if (soldiers != 0) {
-      val randomCountry = player.countries(Random.nextInt(player.countries.length))
-      val updatedPlayer = player.addSoldiersToCountry(randomCountry, 1)
-      distributeSoldierToRandCountry(updatedPlayer, soldiers - 1)
+      val randomCountry = playingField.getCountriesForPlayer(player)(Random.nextInt(player.countries.length))
+      val updatedPlayingField = playingField.addSoldiersToCountry(randomCountry, 1)
+      distributeSoldierToRandCountry(updatedPlayingField, player, soldiers - 1)
     } else {
-      player
+      playingField
     }
   }
 

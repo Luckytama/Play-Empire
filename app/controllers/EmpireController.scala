@@ -1,8 +1,8 @@
 package controllers
 
-import akka.actor.{ ActorSystem, _ }
+import akka.actor.{ActorSystem, _}
 import akka.stream.Materializer
-import com.google.inject.{ Guice, Injector }
+import com.google.inject.{Guice, Injector}
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
@@ -11,13 +11,13 @@ import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.model.grid.Country
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.I18nSupport
-import play.api.libs.json.{ Json, _ }
+import play.api.libs.json.{Json, _}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc._
-import utils.auth.{ DefaultEnv, WithProvider }
+import utils.auth.{DefaultEnv, WithProvider}
 
 import scala.concurrent.ExecutionContext
 import scala.swing.Reactor
@@ -124,7 +124,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   }
 
   def getCountries: String = {
-    val countries = Json.obj("countries" -> gameController.getPlayerOnTurn.countries)
+    val countries = Json.obj("countries" -> gameController.playingField.getCountriesForPlayer(gameController.getPlayerOnTurn))
     countries.toString
   }
 
@@ -132,7 +132,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     val playerOnTurn = Json.obj("playerInfo" -> Json.obj(
       "playerOnTurn" -> JsString(gameController.getPlayerOnTurn.name),
       "numberOfCountries" -> JsNumber(gameController.getPlayerOnTurn.getCountryAmount),
-      "numberOfSoldiers" -> JsNumber(gameController.getPlayerOnTurn.getNumberOfAllSoldiers)
+      "numberOfSoldiers" -> JsNumber(gameController.playingField.getNumberOfAllSoldiers(gameController.getPlayerOnTurn))
     ))
     playerOnTurn.toString
   }
@@ -169,8 +169,7 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
     val playernames = headers.get("players[]")
     val playingfieldFile = headers("playingfield").head
 
-    gameController.setUpPhase("playingfield/" + playingfieldFile)
-    playernames.foreach(gameController.addPlayer)
+    gameController.setUpPhase("playingfield/" + playingfieldFile, playernames.get: _*)
     gameController.changeToGamePhase()
     if (gameController.status == Phase.REINFORCEMENT) {
       Ok("Success!")

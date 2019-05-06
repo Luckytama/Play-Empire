@@ -1,11 +1,14 @@
 package de.htwg.se.empire.controller
 
+import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.model.player.Player
 import de.htwg.se.empire.util.Phase.Phase
 
 import scala.swing.Publisher
 
 trait GameController extends Publisher {
+
+  var playingField: PlayingField
 
   def status: Phase
 

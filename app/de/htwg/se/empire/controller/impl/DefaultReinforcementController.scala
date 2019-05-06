@@ -1,12 +1,9 @@
 package de.htwg.se.empire.controller.impl
 
 import de.htwg.se.empire.controller.ReinforcementController
-import de.htwg.se.empire.model.grid.PlayingField
+import de.htwg.se.empire.model.grid.{Country, PlayingField}
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{ LogManager, Logger }
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{ Failure, Random, Success }
+import org.apache.logging.log4j.{LogManager, Logger}
 
 class DefaultReinforcementController extends ReinforcementController {
 
@@ -23,7 +20,7 @@ class DefaultReinforcementController extends ReinforcementController {
   def getBonus(playingField: PlayingField, player: Player): Int = {
     var bonus = 0
     for (c <- playingField.continents) {
-      val continentCountries = c.countries.toSet
+      val continentCountries = c.countries.collect { case country: Country => country.name }.toSet
       val playerCountries = player.countries.toSet
       if (playerCountries.subsetOf(continentCountries)) bonus += c.bonus
     }

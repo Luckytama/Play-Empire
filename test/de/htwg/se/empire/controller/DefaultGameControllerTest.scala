@@ -68,7 +68,7 @@ class DefaultGameControllerTest extends WordSpec with Matchers {
         gameController.playingField.getPlayer("Hans").get.getCountryAmount should not be (0)
       }
       "correctly distribute soldiers" in {
-        gameController.playingField.getPlayer("Hans").get.getNumberOfAllSoldiers should not be (0)
+        gameController.playingField.getNumberOfAllSoldiers(gameController.playingField.getPlayer("Hans").get) should not be (0)
       }
       "be in REINFORCEMENT Status" in {
         gameController.getCurrentPhase should be(REINFORCEMENT)

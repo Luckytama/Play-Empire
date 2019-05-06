@@ -7,9 +7,9 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: Player = Player("Nobody")) {
+case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: String = "") {
 
-  def this() = this(List.empty, List.empty, Player("Nobody"))
+  def this() = this(List.empty, List.empty, "")
 
   val LOG: Logger = LogManager.getLogger(this.getClass)
 
@@ -23,14 +23,12 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
 
   }
 
-  def addPlayers(players: String*): Future[PlayingField] = {
-    Future {
-      var playingField: PlayingField = copy()
-      for (playerName <- players) {
-        playingField = playingField.addPlayer(Player(playerName))
-      }
-      playingField
+  def addPlayers(players: String*): PlayingField = {
+    var playingField: PlayingField = copy()
+    for (playerName <- players) {
+      playingField = playingField.addPlayer(Player(playerName))
     }
+    playingField
   }
 
   def removePlayer(player: Player): PlayingField = copy(players = players.filter(_ != player))
@@ -43,7 +41,7 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
 
   def getPlayerForCountry(country: Country): Option[Player] = {
     var playerOpt: Option[Player] = None
-    players.foreach(p => if (p.countries.contains(country)) playerOpt = Some(p))
+    players.foreach(p => if (p.countries.contains(country.name)) playerOpt = Some(p))
     playerOpt
   }
 
@@ -87,11 +85,11 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def updatePlayerOnTurn(player: Player): Future[PlayingField] = {
+  def updatePlayer(player: Player): Future[PlayingField] = {
     Future {
       val maybePlayer = players.find(p => p.name == player.name)
       if (maybePlayer.isDefined) {
-        copy(players = players.updated(players.indexOf(maybePlayer.get), player), playerOnTurn = player)
+        copy(players = players.updated(players.indexOf(maybePlayer.get), player))
       } else {
         LOG.error("Could not find player named: " + player.name)
         this
@@ -99,34 +97,38 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def addCountryToPlayer(updatePlayer: Player, country: Country): Future[PlayingField] = {
-    Future {
-      val maybePlayer = players.find(p => p == updatePlayer)
-      if (maybePlayer.isDefined) {
-        copy(players = players.updated(players.indexOf(updatePlayer), maybePlayer.get.addCountry(country)))
-      } else {
-        this
-      }
+  def addCountryToPlayer(updatePlayer: Player, country: Country): PlayingField = {
+    val maybePlayer = players.find(p => p.name == updatePlayer.name)
+    if (maybePlayer.isDefined) {
+      copy(players = players.updated(players.indexOf(maybePlayer.get), maybePlayer.get.addCountry(country.name)))
+    } else {
+      this
     }
   }
 
   def removeCountryFromPlayer(player: Player, country: Country): Future[PlayingField] = {
     Future {
-      copy(players = players.updated(players.indexOf(player), player.removeCountry(country)))
+      copy(players = players.updated(players.indexOf(player), player.removeCountry(country.name)))
     }
   }
 
-  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): Future[PlayingField] = {
-    Future {
-      copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
-    }
+  def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField = {
+    copy(players = players.updated(players.indexOf(player), player.copy(handholdSoldiers = handholdSoldiers)))
   }
 
-  def getPlayerOnTurn: Option[Player] = players.find(_ eq playerOnTurn)
+  def getPlayerOnTurn: Option[Player] = players.find(_.name eq playerOnTurn)
 
   def addSoldiersToCountry(country: Country, numberOfSoldiers: Int): PlayingField = {
     updateCountry(country, country.addSoldiers(numberOfSoldiers).get)
+  }
 
+  def getCountriesForPlayer(player: Player): List[Country] = getAllCountries.filter(c => player.countries.contains(c.name))
+
+  def getNumberOfAllSoldiers(player: Player): Int = {
+    val countries = getCountriesForPlayer(player)
+    var sum = 0
+    countries.foreach(c => sum += c.soldiers)
+    sum
   }
 
   override def toString: String = {
