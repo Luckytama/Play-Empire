@@ -4,8 +4,6 @@ import de.htwg.se.empire.model.player.Player
 import org.apache.logging.log4j.{LogManager, Logger}
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 case class PlayingField(continents: List[Continent] = List.empty, players: List[Player] = List.empty, playerOnTurn: String = "") {
 
@@ -65,12 +63,10 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): Future[PlayingField] = {
-    Future {
-      val srcCountry = src.removeSoldiers(numberOfSoldiers)
-      val targetCountry = target.addSoldiers(numberOfSoldiers)
-      updateCountry(src, srcCountry.get).updateCountry(target, targetCountry.get)
-    }
+  def moveSoldiers(src: Country, target: Country, numberOfSoldiers: Int): PlayingField = {
+    val srcCountry = src.removeSoldiers(numberOfSoldiers)
+    val targetCountry = target.addSoldiers(numberOfSoldiers)
+    updateCountry(src, srcCountry.get).updateCountry(target, targetCountry.get)
   }
 
   def updateCountry(oldCountry: Country, newCountry: Country): PlayingField = {
@@ -104,10 +100,8 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def removeCountryFromPlayer(player: Player, country: Country): Future[PlayingField] = {
-    Future {
-      copy(players = players.updated(players.indexOf(player), player.removeCountry(country.name)))
-    }
+  def removeCountryFromPlayer(player: Player, country: Country): PlayingField = {
+    copy(players = players.updated(players.indexOf(player), player.removeCountry(country.name)))
   }
 
   def distributeHandholdSoldiers(player: Player, handholdSoldiers: Int): PlayingField = {

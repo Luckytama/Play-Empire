@@ -9,9 +9,6 @@ import de.htwg.se.empire.parser.Parser
 import de.htwg.se.empire.util.Phase.{Phase, _}
 import org.apache.logging.log4j.{LogManager, Logger}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
-
 case class DefaultGameController @Inject() (var playingField: PlayingField) extends GameController {
 
   val injector: Injector = Guice.createInjector(new EmpireModule)
@@ -89,16 +86,9 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
       this.playingField = this.playingField.updateCountry(targetCountry, target)
       if (playingField.getCountry(targetCountryName).get.soldiers == 0) {
         val ownerTargetCountry = playingField.getPlayerForCountry(playingField.getCountry(targetCountryName).get).get
-        this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountryName).get).onComplete {
-          case Success(value) => LOG.info("Success")
-          case Failure(err) => LOG.error("error")
-        }
+        this.playingField = this.playingField.removeCountryFromPlayer(ownerTargetCountry, this.playingField.getCountry(targetCountryName).get)
         this.playingField = this.playingField.addCountryToPlayer(this.playingField.getPlayerOnTurn.get, this.playingField.getCountry(targetCountryName).get)
-        status = MOVING
-        this.playingField.moveSoldiers(playingField.getCountry(srcCountryName).get, playingField.getCountry(targetCountryName).get, playingField.getCountry(srcCountryName).get.soldiers / 2).onComplete {
-          case Success(value) => LOG.info("Success")
-          case Failure(err) => LOG.error("error")
-        }
+        this.playingField = this.playingField.moveSoldiers(playingField.getCountry(srcCountryName).get, playingField.getCountry(targetCountryName).get, playingField.getCountry(srcCountryName).get.soldiers / 2)
         "You win the battle and gain the country"
       } else {
         "The Country was defended"
