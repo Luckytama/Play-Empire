@@ -11,6 +11,7 @@ import de.htwg.se.empire.controller.GameController
 import de.htwg.se.empire.model.grid.Country
 import de.htwg.se.empire.util.Phase
 import de.htwg.se.empire.view.TUI
+import de.htwg.se.empire.view.rest.RestApi
 import javax.inject.{Inject, Singleton}
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.I18nSupport
@@ -36,6 +37,8 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
 
   var gameController: GameController = injector.getInstance(classOf[GameController])
   var tui: TUI = TUI(gameController)
+  val restApi: RestApi = new RestApi(gameController)
+  restApi.startRestApi()
 
   def ws: WebSocket = WebSocket.accept[String, String] { request =>
     ActorFlow.actorRef { out =>
