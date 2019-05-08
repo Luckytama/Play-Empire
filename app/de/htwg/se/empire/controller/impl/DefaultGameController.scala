@@ -64,11 +64,8 @@ case class DefaultGameController @Inject() (var playingField: PlayingField) exte
   override def distributeSoldiers(soldiers: Int, countryName: String): Int = {
     if (status == REINFORCEMENT) {
       if (this.playingField.getPlayerOnTurn.get.handholdSoldiers - soldiers >= 0) {
-        this.playingField = reinforcementController.distributeSoldiers(playingField, countryName, soldiers)
-        this.playingField.updatePlayer(this.playingField.getPlayerOnTurn.get.putSoldiers(soldiers)).onComplete {
-          case Success(value) => LOG.info("Success")
-          case Failure(err) => LOG.error("error")
-        }
+        this.playingField = reinforcementController.distributeSoldiers(this.playingField, countryName, soldiers)
+        this.playingField = this.playingField.updatePlayer(this.playingField.getPlayerOnTurn.get.putSoldiers(soldiers))
         if (this.playingField.getPlayerOnTurn.get.handholdSoldiers == 0) {
           changeToAttackPhase()
         }

@@ -85,15 +85,13 @@ case class PlayingField(continents: List[Continent] = List.empty, players: List[
     }
   }
 
-  def updatePlayer(player: Player): Future[PlayingField] = {
-    Future {
-      val maybePlayer = players.find(p => p.name == player.name)
-      if (maybePlayer.isDefined) {
-        copy(players = players.updated(players.indexOf(maybePlayer.get), player))
-      } else {
-        LOG.error("Could not find player named: " + player.name)
-        this
-      }
+  def updatePlayer(player: Player): PlayingField = {
+    val maybePlayer = players.find(p => p.name == player.name)
+    if (maybePlayer.isDefined) {
+      copy(players = players.updated(players.indexOf(maybePlayer.get), player))
+    } else {
+      LOG.error("Could not find player named: " + player.name)
+      this
     }
   }
 
