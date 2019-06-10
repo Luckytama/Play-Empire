@@ -1,6 +1,6 @@
 package de.htwg.se.empire.parser.impl
 
-import java.io.FileNotFoundException
+import java.io.{ BufferedWriter, File, FileNotFoundException, FileWriter }
 
 import de.htwg.se.empire.model.grid.PlayingField
 import de.htwg.se.empire.parser.Parser
@@ -18,7 +18,19 @@ class JsonParser extends Parser {
     val source = Source.fromFile(path)
     val playingFieldJson = source.getLines().mkString
     source.close
-    parse(playingFieldJson).extract[PlayingField]
+    parsePlayingFieldFromJson(playingFieldJson)
+  }
+
+  override def parsePlayingFieldFromJson(json: String): PlayingField = {
+    parse(json).extract[PlayingField]
+  }
+
+  override def parsePlayingFieldToFile(playingField: String): String = {
+    val file = new File("VERY_IMPORTANTE_JSON_EMPIRE_FILE.json")
+    val bw = new BufferedWriter(new FileWriter(file))
+    bw.write(playingField)
+    bw.close()
+    "Success"
   }
 
 }

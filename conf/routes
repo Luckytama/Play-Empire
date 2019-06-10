@@ -33,4 +33,5 @@ GET             /empire/newmapgame          controllers.EmpireController.newMapG
 
 GET     /ws                         controllers.EmpireController.ws
 
+POST    /empire/setmap              controllers.EmpireController.setMap
 POST    /empire/startgame           controllers.EmpireController.startGame

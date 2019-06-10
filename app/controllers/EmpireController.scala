@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext
 import scala.swing.Reactor
 
 @Singleton
-class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(
+class EmpireController @Inject()(cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(
   implicit
   webJarsUtil: WebJarsUtil,
   assets: AssetsFinder,
@@ -167,14 +167,20 @@ class EmpireController @Inject() (cc: ControllerComponents, silhouette: Silhouet
   def startGame: Action[AnyContent] = Action { request =>
     val headers = request.body.asFormUrlEncoded.get
     val playernames = headers.get("players[]")
-    val playingfieldFile = headers("playingfield").head
 
-    gameController.setUpPhase("playingfield/" + playingfieldFile, playernames.get: _*)
+    playernames.foreach(x => for (y <- x) gameController.addPlayer(y))
     gameController.changeToGamePhase()
     if (gameController.status == Phase.REINFORCEMENT) {
       Ok("Success!")
     } else {
       BadRequest("something went wrong")
     }
+  }
+
+  def setMap: Action[AnyContent] = Action { request =>
+    val headers = request.body.asFormUrlEncoded.get
+    val playingfieldFile = headers("field").head
+    gameController.setUpPhase("/api/" + playingfieldFile)
+    Ok("Success")
   }
 }

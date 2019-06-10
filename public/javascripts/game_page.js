@@ -106,13 +106,31 @@ $(document).ready(function () {
                 ws.send(JSON.stringify(data));
                 app.updateGame();
             },
+            setMap: function () {
+                playingField = $("#field-select").val();
+                let field = {
+                    'field': $("#field-select").val()
+                };
+                console.log(field);
+                $.ajax({
+                    url: '/empire/setmap',
+                    type: 'POST',
+                    data: field,
+                    success: function () {
+                        $("#start_game").removeAttr('disabled');
+                        showNotification(false, "Playingfield selected.")
+                    },
+                    error: function () {
+                        showNotification(true, "Game can't be started.")
+                    }
+                });
+            },
             startGame: function () {
                 $("#player_form input[type=text]").each(function () {
                     if (this.value !== "") {
                         players.push(this.value);
                     }
                 });
-                playingField = $("#field-select").val();
                 if (players.length >= 2) {
                     app.firstPlayer = players[0];
                     app.secondPlayer = players[1];

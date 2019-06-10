@@ -28,6 +28,9 @@
                             <option value="EmpireData.json">Classic Risk Board</option>
                             <option value="PresentationData.json">Small Presentation Board</option>
                         </select>
+                        <div>
+                            <button type="button" v-on:click="setMap" class="btn btn-dark">Set map</button>
+                        </div>
                     </div>
                     <div class="form_add_player">
                         <form id="player_form">
@@ -39,7 +42,7 @@
                     <button type="button" id="delete_player" class="btn btn-dark">-</button>
                     <button type="button" id="add_player" class="btn btn-dark">+</button>
                     <div class="start_game">
-                        <button type="button" id="start_game" v-on:click="startGame" class="btn btn-dark">Start Game</button>
+                        <button disabled type="button" id="start_game" v-on:click="startGame" class="btn btn-dark">Start Game</button>
                     </div>
                 </div>
                 <div v-if="playerOnTurn !== ''" class="game_info col-md-3">

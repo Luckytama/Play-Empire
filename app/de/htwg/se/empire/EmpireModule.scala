@@ -9,7 +9,7 @@ import net.codingwell.scalaguice.ScalaModule
 
 class EmpireModule extends AbstractModule with ScalaModule {
 
-  val defaultHostname: String = "localhost"
+  val defaultHostname: String = "game"
   val defaultFileport: Int = 8089
 
   override def configure(): Unit = {
