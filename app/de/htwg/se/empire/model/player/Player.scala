@@ -1,6 +1,6 @@
 package de.htwg.se.empire.model.player
 
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
 
 case class Player(name: String, countries: List[String] = List.empty, handholdSoldiers: Int = 0) {
 

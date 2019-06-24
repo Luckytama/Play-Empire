@@ -1,9 +1,9 @@
 package de.htwg.se.empire.controller.impl
 
 import de.htwg.se.empire.controller.ReinforcementController
-import de.htwg.se.empire.model.grid.{Country, PlayingField}
+import de.htwg.se.empire.model.grid.{ Country, PlayingField }
 import de.htwg.se.empire.model.player.Player
-import org.apache.logging.log4j.{LogManager, Logger}
+import org.apache.logging.log4j.{ LogManager, Logger }
 
 class DefaultReinforcementController extends ReinforcementController {
 
