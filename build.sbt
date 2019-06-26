@@ -26,6 +26,7 @@ libraryDependencies ++= Seq(
   "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.1-akka-2.5.x",
   "com.adrianhurt" %% "play-bootstrap" % "1.4-P26-B3-SNAPSHOT",
   "com.mohiva" %% "play-silhouette-testkit" % "5.0.5" % "test",
+  "org.mongodb.scala" %% "mongo-scala-driver" % "2.6.0",
   specs2 % Test,
   ehcache,
   guice,
